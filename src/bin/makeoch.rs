@@ -1,10 +1,8 @@
 use futures_util::StreamExt;
 use std::collections::HashMap;
-use std::ffi::OsStr;
 use std::path::Path;
-use std::{env, error::Error, fmt::Write, io::Read, path::PathBuf};
-use tokio::fs;
-use tokio::io::AsyncWriteExt;
+use std::{env, fmt::Write, io::Read, path::PathBuf};
+use tokio::{fs, io::AsyncWriteExt, process};
 
 use anyhow::{Result, anyhow, bail};
 use indicatif::{ProgressBar, ProgressState, ProgressStyle};
@@ -145,7 +143,8 @@ async fn process_source(
 
 async fn makeoch() -> Result<()> {
     info!("Parsing OCHBUILD");
-    let contents = fs::read_to_string("OCHBUILD")
+    let ochbuild_path = PathBuf::from("OCHBUILD");
+    let contents = fs::read_to_string(&ochbuild_path)
         .await
         .expect("Failed to read OCHBUILD file");
     let details = details::parse(contents)?;
@@ -163,6 +162,12 @@ async fn makeoch() -> Result<()> {
     fs::create_dir(&work_path).await?;
     env::set_current_dir(&work_path)?;
     let work_path = env::current_dir()?;
+    let mut destination_dir = work_path.clone();
+    destination_dir.push("dest");
+    fs::create_dir(&destination_dir).await?;
+    unsafe {
+        env::set_var("DEST", destination_dir.to_str().unwrap());
+    }
 
     let mut source_paths = HashMap::new();
     info!("Fetching sources");
@@ -179,6 +184,17 @@ async fn makeoch() -> Result<()> {
     info!("Processing sources");
     for source in details.sources.iter() {
         process_source(source, source_paths.get(source).unwrap(), &work_path).await?;
+    }
+
+    info!("Running OCHBUILD");
+    let ochbuild_status = process::Command::new("bash")
+        .arg("-e")
+        .arg(ochbuild_path.to_str().unwrap())
+        .status()
+        .await?;
+
+    if !ochbuild_status.success() {
+        bail!("OCHBUILD Exited with statuscode {}", ochbuild_status)
     }
 
     Ok(())

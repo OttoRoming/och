@@ -1,4 +1,6 @@
 use futures_util::StreamExt;
+use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::path::Path;
 use std::{env, error::Error, fmt::Write, io::Read, path::PathBuf};
 use tokio::fs;
@@ -21,16 +23,17 @@ pub static PROGRESS_STYLE: Lazy<ProgressStyle> = Lazy::new(|| {
     .progress_chars("oc ")
 });
 
-fn url_filename(url: &str) -> String {
-    PathBuf::from(url)
-        .file_name()
-        .and_then(|n| n.to_str())
-        .unwrap_or("download.bin")
-        .to_string()
+fn url_filename(url: &str) -> Result<PathBuf> {
+    let mut path = env::current_dir()?;
+    match PathBuf::from(url).file_name() {
+        Some(s) => path.push(s),
+        None => path.push("download.bin"),
+    }
+
+    Ok(path)
 }
 
-async fn fetch_url(url: &str) -> Result<()> {
-    let filename = url_filename(url);
+async fn fetch_url(url: &str, path: impl AsRef<Path>) -> Result<()> {
     let response = reqwest::get(url).await?.error_for_status()?;
 
     let total_size = response.content_length().unwrap_or(u64::MAX);
@@ -38,7 +41,7 @@ async fn fetch_url(url: &str) -> Result<()> {
     pb.set_style(PROGRESS_STYLE.clone());
     let mut stream = response.bytes_stream();
 
-    let mut file = fs::File::create(&filename).await?;
+    let mut file = fs::File::create(&path).await?;
     let mut downloaded: u64 = 0;
 
     while let Some(chunk) = stream.next().await {
@@ -52,14 +55,15 @@ async fn fetch_url(url: &str) -> Result<()> {
     Ok(())
 }
 
-async fn fetch_source(source: &Source) -> Result<()> {
+async fn fetch_source(source: &Source) -> Result<PathBuf> {
     match source {
         Source::Tar { url, hash: _ } => {
-            fetch_url(url).await?;
+            let filename = url_filename(url)?;
+            fetch_url(url, &filename).await?;
+
+            Ok(filename)
         }
     }
-
-    Ok(())
 }
 
 async fn sha256_file(path: impl AsRef<Path>) -> Result<String> {
@@ -69,11 +73,10 @@ async fn sha256_file(path: impl AsRef<Path>) -> Result<String> {
     Ok(hash)
 }
 
-async fn check_source(source: &Source) -> Result<()> {
+async fn check_source(source: &Source, path: impl AsRef<Path>) -> Result<()> {
     match source {
         Source::Tar { url, hash } => {
-            let filename = url_filename(url);
-            let file_hash = sha256_file(&filename).await?;
+            let file_hash = sha256_file(path).await?;
 
             if file_hash
                 != hash
@@ -88,7 +91,7 @@ async fn check_source(source: &Source) -> Result<()> {
     Ok(())
 }
 
-async fn tar_extract_file(path: impl AsRef<Path>) -> Result<()> {
+async fn tar_extract_file(path: impl AsRef<Path>, destination: impl AsRef<Path>) -> Result<()> {
     let file = std::fs::File::open(&path)?;
     let total = file.metadata()?.len();
     let pb = ProgressBar::new(total);
@@ -120,16 +123,20 @@ async fn tar_extract_file(path: impl AsRef<Path>) -> Result<()> {
     };
 
     let mut archive = tar::Archive::new(reader);
-    archive.unpack(".")?;
+    archive.unpack(destination)?;
+    pb.finish();
 
     Ok(())
 }
 
-async fn process_source(source: &Source) -> Result<()> {
+async fn process_source(
+    source: &Source,
+    path: impl AsRef<Path>,
+    work_path: impl AsRef<Path>,
+) -> Result<()> {
     match source {
-        Source::Tar { url, hash: _ } => {
-            let filename = url_filename(url);
-            tar_extract_file(filename).await?;
+        Source::Tar { url: _, hash: _ } => {
+            tar_extract_file(path, work_path).await?;
         }
     }
 
@@ -155,20 +162,23 @@ async fn makeoch() -> Result<()> {
 
     fs::create_dir(&work_path).await?;
     env::set_current_dir(&work_path)?;
+    let work_path = env::current_dir()?;
 
+    let mut source_paths = HashMap::new();
     info!("Fetching sources");
-    for source in &details.sources {
-        fetch_source(source).await?;
+    for source in details.sources.iter() {
+        let path = fetch_source(source).await?;
+        source_paths.insert(source, path);
     }
 
     info!("Checking sources");
-    for source in &details.sources {
-        check_source(source).await?;
+    for source in details.sources.iter() {
+        check_source(source, source_paths.get(source).unwrap()).await?;
     }
 
     info!("Processing sources");
-    for source in &details.sources {
-        process_source(source).await?;
+    for source in details.sources.iter() {
+        process_source(source, source_paths.get(source).unwrap(), &work_path).await?;
     }
 
     Ok(())

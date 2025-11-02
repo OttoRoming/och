@@ -1,0 +1,11 @@
+# name "man-pages"
+# version "6.15"
+# description "contains over 2,400 man pages"
+# url "https://www.kernel.org/doc/man-pages/"
+# source tar "https://www.kernel.org/pub/linux/docs/man-pages/man-pages-6.15.tar.xz"
+# ---
+
+# Remove two man pages for password hashing functions. Libxcrypt will provide a better version of these man pages:
+rm -v man3/crypt*
+
+make -R GIT=false prefix=/usr install

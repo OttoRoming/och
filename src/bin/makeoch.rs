@@ -1,7 +1,10 @@
 use futures_util::StreamExt;
-use std::{env, error::Error, fmt::Write, path::PathBuf};
-use tokio::{fs, io::AsyncWriteExt};
+use std::path::Path;
+use std::{env, error::Error, fmt::Write, io::Read, path::PathBuf};
+use tokio::fs;
+use tokio::io::AsyncWriteExt;
 
+use anyhow::{Result, anyhow, bail};
 use indicatif::{ProgressBar, ProgressState, ProgressStyle};
 use och::details::Source;
 use och::{details, err, info};
@@ -26,7 +29,7 @@ fn url_filename(url: &str) -> String {
         .to_string()
 }
 
-async fn fetch_url(url: &str) -> Result<(), Box<dyn Error>> {
+async fn fetch_url(url: &str) -> Result<()> {
     let filename = url_filename(url);
     let response = reqwest::get(url).await?.error_for_status()?;
 
@@ -49,17 +52,91 @@ async fn fetch_url(url: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-async fn fetch_source(source: Source) -> Result<(), Box<dyn Error>> {
+async fn fetch_source(source: &Source) -> Result<()> {
     match source {
         Source::Tar { url, hash: _ } => {
-            fetch_url(&url).await?;
+            fetch_url(url).await?;
         }
     }
 
     Ok(())
 }
 
-async fn makeoch() -> Result<(), Box<dyn Error>> {
+async fn sha256_file(path: impl AsRef<Path>) -> Result<String> {
+    let bytes = fs::read(path).await?;
+    let hash = sha256::digest(&bytes);
+
+    Ok(hash)
+}
+
+async fn check_source(source: &Source) -> Result<()> {
+    match source {
+        Source::Tar { url, hash } => {
+            let filename = url_filename(url);
+            let file_hash = sha256_file(&filename).await?;
+
+            if file_hash
+                != hash
+                    .clone()
+                    .ok_or(anyhow!("missing hash {} ({})", url, file_hash))?
+            {
+                bail!("Incorrect hash for {}", url)
+            }
+        }
+    }
+
+    Ok(())
+}
+
+async fn tar_extract_file(path: impl AsRef<Path>) -> Result<()> {
+    let file = std::fs::File::open(&path)?;
+    let total = file.metadata()?.len();
+    let pb = ProgressBar::new(total);
+    pb.set_style(PROGRESS_STYLE.clone());
+
+    let pb_reader = pb.wrap_read(file);
+
+    let reader: Box<dyn Read> = {
+        let name = path
+            .as_ref()
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or_default()
+            .to_lowercase();
+        if name.ends_with(".tar.gz") || name.ends_with(".tgz") {
+            Box::new(flate2::read::GzDecoder::new(pb_reader))
+        } else if name.ends_with(".tar.xz") || name.ends_with(".txz") {
+            Box::new(xz2::read::XzDecoder::new(pb_reader))
+        } else if name.ends_with(".tar.bz2") || name.ends_with(".tbz") || name.ends_with(".tbz2") {
+            Box::new(bzip2::read::BzDecoder::new(pb_reader))
+        } else if name.ends_with(".tar") {
+            // plain tar
+            Box::new(pb_reader)
+        } else {
+            // fallback: try to auto-detect by magic or assume plain tar
+            // (optionally replace this with deko/autocompress for magic detection)
+            Box::new(pb_reader)
+        }
+    };
+
+    let mut archive = tar::Archive::new(reader);
+    archive.unpack(".")?;
+
+    Ok(())
+}
+
+async fn process_source(source: &Source) -> Result<()> {
+    match source {
+        Source::Tar { url, hash: _ } => {
+            let filename = url_filename(url);
+            tar_extract_file(filename).await?;
+        }
+    }
+
+    Ok(())
+}
+
+async fn makeoch() -> Result<()> {
     info!("Parsing OCHBUILD");
     let contents = fs::read_to_string("OCHBUILD")
         .await
@@ -79,8 +156,19 @@ async fn makeoch() -> Result<(), Box<dyn Error>> {
     fs::create_dir(&work_path).await?;
     env::set_current_dir(&work_path)?;
 
-    for source in details.sources {
+    info!("Fetching sources");
+    for source in &details.sources {
         fetch_source(source).await?;
+    }
+
+    info!("Checking sources");
+    for source in &details.sources {
+        check_source(source).await?;
+    }
+
+    info!("Processing sources");
+    for source in &details.sources {
+        process_source(source).await?;
     }
 
     Ok(())

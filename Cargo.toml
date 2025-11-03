@@ -17,3 +17,6 @@ tar = "0.4.44"
 flate2 = "1.1.5"
 bzip2 = "0.6.1"
 xz2 = "0.1.7"
+serde = "1.0.228"
+clap = { version = "4.5.51", features = ["derive"] }
+ron = "=0.10.1"

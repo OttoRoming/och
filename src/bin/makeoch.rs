@@ -142,8 +142,14 @@ async fn process_source(
 }
 
 async fn makeoch() -> Result<()> {
+    unsafe {
+        env::set_var("MAKEFLAGS", "-j8");
+    }
+
     info!("Parsing OCHBUILD");
-    let ochbuild_path = PathBuf::from("OCHBUILD");
+    let root = env::current_dir()?;
+    let mut ochbuild_path = root.clone();
+    ochbuild_path.push("OCHBUILD");
     let contents = fs::read_to_string(&ochbuild_path)
         .await
         .expect("Failed to read OCHBUILD file");
@@ -166,7 +172,7 @@ async fn makeoch() -> Result<()> {
     destination_dir.push("dest");
     fs::create_dir(&destination_dir).await?;
     unsafe {
-        env::set_var("DEST", destination_dir.to_str().unwrap());
+        env::set_var("DESTDIR", destination_dir.to_str().unwrap());
     }
 
     let mut source_paths = HashMap::new();
@@ -190,12 +196,24 @@ async fn makeoch() -> Result<()> {
     let ochbuild_status = process::Command::new("bash")
         .arg("-e")
         .arg(ochbuild_path.to_str().unwrap())
+        .stdout(std::process::Stdio::inherit())
+        .stderr(std::process::Stdio::inherit())
         .status()
         .await?;
 
     if !ochbuild_status.success() {
         bail!("OCHBUILD Exited with statuscode {}", ochbuild_status)
     }
+
+    info!("Creating package archvie");
+    let mut pacakge_archive_path = root.clone();
+    pacakge_archive_path.push(format!("{}-{}.tar.gz", details.name, details.version));
+    let package_archive = std::fs::File::create(&pacakge_archive_path)?;
+    let buffer = std::io::BufWriter::new(package_archive);
+    let encoder = flate2::write::GzEncoder::new(buffer, flate2::Compression::best());
+    let mut tar = tar::Builder::new(encoder);
+    tar.append_dir_all(".", destination_dir)?;
+    tar.finish()?;
 
     Ok(())
 }

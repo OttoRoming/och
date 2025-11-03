@@ -1,2 +1,3 @@
 /target
-/work
+ochbuilds/*/work
+ochbuilds/*/*.tar.gz

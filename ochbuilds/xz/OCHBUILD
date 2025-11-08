@@ -1,0 +1,15 @@
+# name "xz"
+# version "5.8.1"
+# description "Programs for compressing and decompressing files. It provides capabilities for the lzma and the newer xz compression formats. Compressing text files with xz yields a better compression percentage than with the traditional gzip or bzip2 commands."
+# url "https://tukaani.org/xz"
+# source tar "https://github.com//tukaani-project/xz/releases/download/v5.8.1/xz-5.8.1.tar.xz"
+# ---
+
+cd xz-5.8.1
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/xz-5.8.1
+
+make
+make install

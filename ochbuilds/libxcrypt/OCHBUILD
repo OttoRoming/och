@@ -1,0 +1,17 @@
+# name "libxcrypt"
+# version "4.4.38"
+# description "Modern library for one-way hashing of passwords."
+# url "https://github.com/besser82/libxcrypt/"
+# source tar "https://github.com/besser82/libxcrypt/releases/download/v4.4.38/libxcrypt-4.4.38.tar.xz"
+# ---
+
+cd libxcrypt-4.4.38
+
+./configure --prefix=/usr                \
+            --enable-hashes=strong,glibc \
+            --enable-obsolete-api=no     \
+            --disable-static             \
+            --disable-failure-tokens
+
+make
+make install

@@ -1,0 +1,13 @@
+# name "file"
+# version "5.46"
+# description "Utility for determining the type of a given file or files"
+# url "https://www.darwinsys.com/file/"
+# source tar "https://astron.com/pub/file/file-5.46.tar.gz"
+# ---
+
+cd file-5.46
+
+./configure --prefix=/usr
+
+make
+make install

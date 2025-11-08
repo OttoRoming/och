@@ -1,0 +1,13 @@
+# name "m4"
+# version "1.4.20"
+# description "A macro processor."
+# url "https://www.gnu.org/software/m4/"
+# source tar "https://ftp.gnu.org/gnu/m4/m4-1.4.20.tar.xz"
+# ---
+
+cd m4-1.4.20
+
+./configure --prefix=/usr
+
+make
+make install

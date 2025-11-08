@@ -1,0 +1,17 @@
+
+# name "acl"
+# version "2.3.2"
+# description "Utilities to administer Access Control Lists, which are used to define fine-grained discretionary access rights for files and directories."
+# url "https://savannah.nongnu.org/projects/acl"
+# source tar "https://download.savannah.gnu.org/releases/acl/acl-2.3.2.tar.xz"
+# ---
+
+cd acl-2.3.2
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/acl-2.3.2
+
+make
+
+make install

@@ -1,0 +1,41 @@
+# name "shadow"
+# version "4.18.0"
+# description "Programs for handling passwords in a secure way."
+# url "https://github.com/shadow-maint/shadow/"
+# source tar "https://github.com/shadow-maint/shadow/releases/download/4.18.0/shadow-4.18.0.tar.xz"
+# ---
+
+cd shadow-4.18.0
+
+# Disable the installation of the groups program and its man pages, as Coreutils provides a better version.
+# Also, prevent the installation of manual pages that are provided by the man-pages package.
+sed -i 's/groups$(EXEEXT) //' src/Makefile.in
+find man -name Makefile.in -exec sed -i 's/groups\.1 / /'   {} \;
+find man -name Makefile.in -exec sed -i 's/getspnam\.3 / /' {} \;
+find man -name Makefile.in -exec sed -i 's/passwd\.5 / /'   {} \;
+
+# Instead of using the default crypt method, use the much more secure YESCRYPT method of password encryption, which also allows passwords longer than 8 characters.
+# It is also necessary to change the obsolete /var/spool/mail location for user mailboxes that Shadow uses by default to the /var/mail location used currently.
+# And, remove /bin and /sbin from the PATH, since they are simply symlinks to their counterparts in /usr
+
+sed -e 's:#ENCRYPT_METHOD DES:ENCRYPT_METHOD YESCRYPT:' \
+    -e 's:/var/spool/mail:/var/mail:'                   \
+    -e '/PATH=/{s@/sbin:@@;s@/bin:@@}'                  \
+    -i etc/login.defs
+
+# The file /usr/bin/passwd needs to exist because its location is hardcoded in some programs;
+# if it does not already exist, the installation script will create it in the wrong place.
+mkdir -v "$DESTDIR/usr"
+touch "$DESTDIR/usr/bin/passwd"
+./configure --sysconfdir=/etc   \
+            --disable-static    \
+            --with-{b,yes}crypt \
+            --without-libbsd    \
+            --with-group-name-max-length=32
+
+make
+
+make exec_prefix=/usr install
+make -C man install-man
+
+# FIXME: https://lfs.it-privat.dk/lfs/view/stable/chapter08/shadow.html

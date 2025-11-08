@@ -1,0 +1,19 @@
+# name "dejagnu"
+# version "1.6.3"
+# description "Framework for running test suites on GNU tools. It is written in expect, which itself uses Tcl (Tool Command Language)."
+# url "https://www.gnu.org/software/dejagnu/"
+# source tar "https://ftp.gnu.org/gnu/dejagnu/dejagnu-1.6.3.tar.gz"
+# ---
+
+cd dejagnu-1.6.3
+
+mkdir -v build
+cd       build
+
+../configure --prefix=/usr
+makeinfo --html --no-split -o doc/dejagnu.html ../doc/dejagnu.texi
+makeinfo --plaintext       -o doc/dejagnu.txt  ../doc/dejagnu.texi
+
+make install
+install -v -dm755  "$DESTDIR/usr/share/doc/dejagnu-1.6.3"
+install -v -m644   doc/dejagnu.{html,txt} "$DESTDIR/usr/share/doc/dejagnu-1.6.3"

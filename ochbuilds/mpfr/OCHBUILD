@@ -1,0 +1,19 @@
+# name "mpfr"
+# version "4.2.2"
+# description "Functions for multiple precision math."
+# url "https://www.mpfr.org/"
+# source tar "https://ftp.gnu.org/gnu/mpfr/mpfr-4.2.2.tar.xz"
+# ---
+
+cd mpfr-4.2.2
+
+./configure --prefix=/usr        \
+            --disable-static     \
+            --enable-thread-safe \
+            --docdir=/usr/share/doc/mpfr-4.2.2
+
+make
+make html
+
+make install
+make install-html

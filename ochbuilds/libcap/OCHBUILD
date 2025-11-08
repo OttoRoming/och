@@ -1,0 +1,14 @@
+# name "libcap"
+# version "2.76"
+# description "Implements the userspace interface to the POSIX 1003.1e capabilities available in Linux kernels. These capabilities partition the all-powerful root privilege into a set of distinct privileges."
+# url "https://sites.google.com/site/fullycapable/"
+# source tar "https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.76.tar.xz"
+# ---
+
+cd libcap-2.76
+
+# Prevent static libraries from being installed
+sed -i '/install -m.*STA/d' libcap/Makefile
+
+make prefix=/usr lib=lib
+make prefix=/usr lib=lib install

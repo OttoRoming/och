@@ -5,7 +5,6 @@
 # source tar "https://ftp.gnu.org/gnu/glibc/glibc-2.42.tar.xz"
 # source get "https://www.iana.org/time-zones/repository/releases/tzdata2025b.tar.gz"
 # source get "https://www.linuxfromscratch.org/patches/lfs/12.4/glibc-2.42-fhs-1.patch"
-# build "bash" "binutils" "bison" "coreutils" "diffutils" "gawk" "gcc" "gettext" "grep" "gzip" "linux-headers" "make" "perl "python" "sed" "texinfo"
 # ---
 
 cd glibc-2.42

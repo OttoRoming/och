@@ -1,0 +1,22 @@
+# name "gmp"
+# version "6.3.0"
+# description "Math libraries. These have useful functions for arbitrary precision arithmetic."
+# url "https://www.gnu.org/software/gmp/"
+# source tar "https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz"
+# ---
+
+cd gmp-6.3.0
+
+# First, make an adjustment for compatibility with gcc-15 and later
+sed -i '/long long t1;/,+1s/()/(...)/' configure
+
+./configure --prefix=/usr    \
+            --enable-cxx     \
+            --disable-static \
+            --docdir=/usr/share/doc/gmp-6.3.0
+
+make
+make html
+
+make install
+make install-html

@@ -1,0 +1,13 @@
+# name "bc"
+# version "7.0.3"
+# description "Arbitrary precision numeric processing language."
+# url "https://github.com/gavinhoward/bc"
+# source tar "https://github.com/gavinhoward/bc/releases/download/7.0.3/bc-7.0.3.tar.xz"
+# ---
+
+cd bc-7.0.3
+
+CC='gcc -std=c99' ./configure --prefix=/usr -G -O3 -r
+
+make
+make install

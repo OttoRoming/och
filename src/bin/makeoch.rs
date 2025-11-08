@@ -3,10 +3,11 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::{env, fmt::Write, io::Read, path::PathBuf};
 use tokio::{fs, io::AsyncWriteExt, process};
+use walkdir::WalkDir;
 
 use anyhow::{Result, anyhow, bail};
 use indicatif::{ProgressBar, ProgressState, ProgressStyle};
-use och::details::Source;
+use och::details::{Details, Source};
 use och::{details, err, info};
 use once_cell::sync::Lazy;
 
@@ -20,6 +21,56 @@ pub static PROGRESS_STYLE: Lazy<ProgressStyle> = Lazy::new(|| {
     })
     .progress_chars("oc ")
 });
+
+fn archive_package(root: &Path, details: &Details, destination_dir: &Path) -> Result<PathBuf> {
+    let mut package_archive_path = root.to_path_buf();
+    package_archive_path.push(format!("{}-{}.tar.gz", details.name, details.version));
+
+    let package_archive = std::fs::File::create(&package_archive_path)?;
+    let buffer = std::io::BufWriter::new(package_archive);
+    let encoder = flate2::write::GzEncoder::new(buffer, flate2::Compression::best());
+    let mut tar = tar::Builder::new(encoder);
+
+    // Walk through the directory and add each file with root ownership
+    for entry in WalkDir::new(destination_dir) {
+        let entry = entry?;
+        let path = entry.path();
+
+        // Get relative path and ensure it has at least one component
+        let relative_path = path
+            .strip_prefix(destination_dir)
+            .map_err(|e| anyhow::anyhow!("Failed to get relative path: {}", e))?;
+
+        // Skip if the relative path is empty (the root directory itself)
+        if relative_path.as_os_str().is_empty() || relative_path == Path::new("") {
+            continue;
+        }
+
+        if path.is_file() {
+            let mut file = std::fs::File::open(path)?;
+            let mut header = tar::Header::new_gnu();
+            header.set_metadata(&entry.metadata()?);
+            header.set_uid(0);
+            header.set_gid(0);
+            header.set_cksum();
+
+            tar.append_data(&mut header, relative_path, &mut file)?;
+        } else if path.is_dir() {
+            let mut header = tar::Header::new_gnu();
+            header.set_entry_type(tar::EntryType::Directory);
+            header.set_uid(0);
+            header.set_gid(0);
+            header.set_mode(0o755);
+            header.set_size(0);
+            header.set_cksum();
+
+            tar.append_data(&mut header, relative_path, &mut std::io::empty())?;
+        }
+    }
+
+    tar.finish()?;
+    Ok(package_archive_path)
+}
 
 fn url_filename(url: &str) -> Result<PathBuf> {
     let mut path = env::current_dir()?;
@@ -55,7 +106,7 @@ async fn fetch_url(url: &str, path: impl AsRef<Path>) -> Result<()> {
 
 async fn fetch_source(source: &Source) -> Result<PathBuf> {
     match source {
-        Source::Tar { url, hash: _ } => {
+        Source::Tar { url, hash: _ } | Source::Get { url, hash: _ } => {
             let filename = url_filename(url)?;
             fetch_url(url, &filename).await?;
 
@@ -73,7 +124,7 @@ async fn sha256_file(path: impl AsRef<Path>) -> Result<String> {
 
 async fn check_source(source: &Source, path: impl AsRef<Path>) -> Result<()> {
     match source {
-        Source::Tar { url, hash } => {
+        Source::Tar { url, hash } | Source::Get { url, hash } => {
             let file_hash = sha256_file(path).await?;
 
             if file_hash
@@ -136,6 +187,7 @@ async fn process_source(
         Source::Tar { url: _, hash: _ } => {
             tar_extract_file(path, work_path).await?;
         }
+        Source::Get { url: _, hash: _ } => {}
     }
 
     Ok(())
@@ -206,14 +258,7 @@ async fn makeoch() -> Result<()> {
     }
 
     info!("Creating package archvie");
-    let mut pacakge_archive_path = root.clone();
-    pacakge_archive_path.push(format!("{}-{}.tar.gz", details.name, details.version));
-    let package_archive = std::fs::File::create(&pacakge_archive_path)?;
-    let buffer = std::io::BufWriter::new(package_archive);
-    let encoder = flate2::write::GzEncoder::new(buffer, flate2::Compression::best());
-    let mut tar = tar::Builder::new(encoder);
-    tar.append_dir_all(".", destination_dir)?;
-    tar.finish()?;
+    archive_package(&root, &details, &destination_dir)?;
 
     Ok(())
 }

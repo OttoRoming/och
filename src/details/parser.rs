@@ -149,12 +149,34 @@ impl Parser {
         Ok(Source::Tar { url, hash })
     }
 
+    fn parse_source_get(&mut self) -> Result<Source, Error> {
+        assert_eq!(self.current().kind, TokenKind::KeywordGet);
+        self.advance();
+
+        let url = match &self.current().kind {
+            TokenKind::String(s) => s.to_string(),
+            _ => return Err(Error::UnexpectedToken(self.current().clone())),
+        };
+        self.advance();
+
+        let hash = match &self.current().kind {
+            TokenKind::String(s) => Some(s.to_string()),
+            _ => None,
+        };
+        if hash.is_some() {
+            self.advance();
+        }
+
+        Ok(Source::Get { url, hash })
+    }
+
     fn parse_source(&mut self) -> Result<Source, Error> {
         assert_eq!(self.current().kind, TokenKind::KeywordSource);
         self.advance();
 
         match self.current().kind {
             TokenKind::KeywordTar => self.parse_source_tar(),
+            TokenKind::KeywordGet => self.parse_source_get(),
             _ => Err(Error::UnexpectedToken(self.current().clone())),
         }
     }

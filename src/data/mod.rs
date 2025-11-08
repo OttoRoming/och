@@ -20,12 +20,6 @@ pub struct Package {
     pub files: Vec<String>,
 }
 
-impl Package {
-    pub fn new(name: String, is_explicit: bool) -> Self {
-        Self { name, is_explicit }
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Data {
     pub installed: Vec<Package>,

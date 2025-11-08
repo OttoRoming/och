@@ -9,6 +9,7 @@ pub fn parse(source: String) -> Result<Details, parser::Error> {
 #[derive(Debug, Eq, PartialEq, Hash)]
 pub enum Source {
     Tar { url: String, hash: Option<String> },
+    Get { url: String, hash: Option<String> },
 }
 
 #[derive(Debug)]

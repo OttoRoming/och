@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
-use och::data;
+use och::data::{self};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
     let args = Args::parse();
     let mut db = data::read().await?;
     dbg!(&db);
-    db.installed.push(data::Package::new(args.package, true));
+    // db.installed.push(Package { name: "()", is_explicit: (), version: (), files: () });
     dbg!(&db);
     data::write(&db).await?;
 

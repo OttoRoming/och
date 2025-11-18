@@ -1,0 +1,13 @@
+# name "gperf"
+# version "3.3"
+# description "perfect hash function from a key set"
+# url "https://www.gnu.org/software/gperf/"
+# source tar "https://ftp.gnu.org/gnu/gperf/gperf-3.3.tar.gz"
+# ---
+
+cd gperf-3.3
+
+./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.3
+
+make
+make install

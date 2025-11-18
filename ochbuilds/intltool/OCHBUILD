@@ -1,0 +1,17 @@
+# name "intltoll"
+# version "0.51.0"
+# description "Internationalization tool used for extracting translatable strings from source files."
+# url "https://freedesktop.org/wiki/Software/intltool"
+# source tar "https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz"
+# ---
+
+cd intltool-0.51.0
+
+sed -i 's:\\\${:\\\$\\{:' intltool-update.in
+
+./configure --prefix=/usr
+
+make
+make install
+
+install -v -Dm644 doc/I18N-HOWTO "$DESTDIR/usr/share/doc/intltool-0.51.0/I18N-HOWTO"

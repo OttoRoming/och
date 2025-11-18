@@ -1,0 +1,17 @@
+# name "gettext"
+# version "0.26"
+# description "utilities for internationalization and localization"
+# url "https://www.gnu.org/software/gettext/"
+# source tar "https://ftp.gnu.org/gnu/gettext/gettext-0.26.tar.xz"
+# ---
+
+cd "gettext-0.26"
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/gettext-0.26
+
+make
+
+make install
+chmod -v 0755 /usr/lib/preloadable_libintl.so

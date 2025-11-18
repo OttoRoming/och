@@ -1,0 +1,26 @@
+# name "python"
+# version "3.13.7"
+# description "the Python development environment"
+# url "https://www.python.org/"
+# source tar "https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz"
+# source get "https://www.python.org/ftp/python/doc/3.13.7/python-3.13.7-docs-html.tar.bz2"
+# ---
+
+cd python-3.13.7
+
+./configure --prefix=/usr          \
+            --enable-shared        \
+            --with-system-expat    \
+            --enable-optimizations \
+            --without-static-libpython
+
+make
+make install
+
+install -v -dm755 "$DESTDIR/usr/share/doc/python-3.13.7/html"
+
+tar --strip-components=1  \
+    --no-same-owner       \
+    --no-same-permissions \
+    -C "$DESTDIR/usr/share/doc/python-3.13.7/html" \
+    -xvf ../python-3.13.7-docs-html.tar.bz2

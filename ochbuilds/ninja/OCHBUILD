@@ -1,0 +1,22 @@
+# name "ninja"
+# version "1.31.1"
+# description "Small build system with a focus on speed"
+# url "https://ninja-build.org/"
+# source tar "https://github.com/ninja-build/ninja/archive/v1.13.1/ninja-1.13.1.tar.gz"
+# ---
+
+cd ninja-1.31.1
+
+# make ninja recognize the environment variable NINJAJOBS by running the stream editor
+sed -i '/int Guess/a \
+  int   j = 0;\
+  char* jobs = getenv( "NINJAJOBS" );\
+  if ( jobs != NULL ) j = atoi( jobs );\
+  if ( j > 0 ) return j;\
+' src/ninja.cc
+
+python3 configure.py --bootstrap --verbose
+
+install -vm755 ninja "$DESTDIR/usr/bin/"
+install -vDm644 misc/bash-completion "$DESTDIR/usr/share/bash-completion/completions/ninja"
+install -vDm644 misc/zsh-completion  "$DESTDIR/usr/share/zsh/site-functions/_ninja"

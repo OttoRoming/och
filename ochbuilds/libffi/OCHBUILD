@@ -1,0 +1,15 @@
+# name "libffi"
+# version "3.5.2"
+# description "portable, high level programming interface to various calling conventions"
+# url "https://sourceware.org/libffi/"
+# source tar "https://github.com/libffi/libffi/releases/download/v3.5.2/libffi-3.5.2.tar.gz"
+# ---
+
+cd libffi-3.5.2
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --with-gcc-arch=native
+
+make
+make install

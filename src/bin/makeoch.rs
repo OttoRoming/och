@@ -24,51 +24,24 @@ pub static PROGRESS_STYLE: Lazy<ProgressStyle> = Lazy::new(|| {
 
 fn archive_package(root: &Path, details: &Details, destination_dir: &Path) -> Result<PathBuf> {
     let mut package_archive_path = root.to_path_buf();
-    package_archive_path.push(format!("{}-{}.tar.gz", details.name, details.version));
+    package_archive_path.push(format!("{}-{}.tar.lz", details.name, details.version));
 
-    let package_archive = std::fs::File::create(&package_archive_path)?;
-    let buffer = std::io::BufWriter::new(package_archive);
-    let encoder = flate2::write::GzEncoder::new(buffer, flate2::Compression::best());
-    let mut tar = tar::Builder::new(encoder);
+    // Create the tar.lz archive using the `tar` command
+    let tar_lz_status = std::process::Command::new("tar")
+        .arg("--owner=0")
+        .arg("--group=0")
+        .arg("--lzip")
+        .arg("-cf")
+        .arg(package_archive_path.to_str().unwrap())
+        .arg("-C")
+        .arg(destination_dir.to_str().unwrap())
+        .arg(".")
+        .status()?;
 
-    // Walk through the directory and add each file with root ownership
-    for entry in WalkDir::new(destination_dir) {
-        let entry = entry?;
-        let path = entry.path();
-
-        // Get relative path and ensure it has at least one component
-        let relative_path = path
-            .strip_prefix(destination_dir)
-            .map_err(|e| anyhow::anyhow!("Failed to get relative path: {}", e))?;
-
-        // Skip if the relative path is empty (the root directory itself)
-        if relative_path.as_os_str().is_empty() || relative_path == Path::new("") {
-            continue;
-        }
-
-        if path.is_file() {
-            let mut file = std::fs::File::open(path)?;
-            let mut header = tar::Header::new_gnu();
-            header.set_metadata(&entry.metadata()?);
-            header.set_uid(0);
-            header.set_gid(0);
-            header.set_cksum();
-
-            tar.append_data(&mut header, relative_path, &mut file)?;
-        } else if path.is_dir() {
-            let mut header = tar::Header::new_gnu();
-            header.set_entry_type(tar::EntryType::Directory);
-            header.set_uid(0);
-            header.set_gid(0);
-            header.set_mode(0o755);
-            header.set_size(0);
-            header.set_cksum();
-
-            tar.append_data(&mut header, relative_path, &mut std::io::empty())?;
-        }
+    if !tar_lz_status.success() {
+        bail!("tar command exited with status {}", tar_lz_status);
     }
 
-    tar.finish()?;
     Ok(package_archive_path)
 }
 
@@ -196,6 +169,7 @@ async fn process_source(
 async fn makeoch() -> Result<()> {
     unsafe {
         env::set_var("MAKEFLAGS", "-j8");
+        env::set_var("NINJAJOBS", "8");
     }
 
     info!("Parsing OCHBUILD");

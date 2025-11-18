@@ -1,0 +1,13 @@
+# name "diffutils"
+# version "3.12"
+# description "programs that show the differences between files or directories"
+# url "https://www.gnu.org/software/diffutils/"
+# source tar "https://ftp.gnu.org/gnu/diffutils/diffutils-3.12.tar.xz"
+# ---
+
+cd diffutils-3.12
+
+./configure --prefix=/usr
+
+make
+make install

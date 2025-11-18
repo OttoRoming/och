@@ -1,0 +1,15 @@
+# name "libtool"
+# version "2.5.4"
+# description "the GNU generic library support script"
+# url "https://www.gnu.org/software/libtool/"
+# source tar "https://ftp.gnu.org/gnu/libtool/libtool-2.5.4.tar.xz"
+# ---
+
+cd libtool-2.5.4
+
+./configure --prefix=/usr
+
+make
+make install
+
+rm -fv "$DESTDIR/usr/lib/libltdl.a"

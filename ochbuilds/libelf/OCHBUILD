@@ -1,0 +1,17 @@
+# name "libelf"
+# version "0.193"
+# description "library for handling ELF (Executable and Linkable Format) files"
+# url "https://sourceware.org/elfutils/"
+# source tar "https://sourceware.org/ftp/elfutils/0.193/elfutils-0.193.tar.bz2"
+# ---
+
+cd elfutils-0.193
+
+./configure --prefix=/usr        \
+            --disable-debuginfod \
+            --enable-libdebuginfod=dummy
+
+make
+make -C libelf install
+install -vm644 config/libelf.pc "$DESTDIR/usr/lib/pkgconfig"
+rm "$DESTDIR/usr/lib/libelf.a"

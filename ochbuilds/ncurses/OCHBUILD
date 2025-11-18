@@ -1,0 +1,31 @@
+# name "ncurses"
+# version "6.5"
+# description "libraries for terminal-independent handling of character screens."
+# url "https://www.gnu.org/software/ncurses/"
+# source tar "https://invisible-mirror.net/archives/ncurses/current/ncurses-6.5-20250809.tgz"
+# ---
+
+cd "ncurses-6.5"
+
+./configure --prefix=/usr           \
+            --mandir=/usr/share/man \
+            --with-shared           \
+            --without-debug         \
+            --without-normal        \
+            --with-cxx-shared       \
+            --enable-pc-files       \
+            --with-pkg-config-libdir=/usr/lib/pkgconfig
+
+make
+make install
+
+sed -e 's/^#if.*XOPEN.*$/#if 1/' \
+    -i "$DESTDIR/usr/include/curses.h"
+
+for lib in ncurses form panel menu ; do
+    ln -sfv lib${lib}w.so "$DESTDIR/usr/lib/lib${lib}.so"
+    ln -sfv ${lib}w.pc    "$DESTDIR/usr/lib/pkgconfig/${lib}.pc"
+done
+
+ln -sfv libncursesw.so "$DESTDIR/usr/lib/libcurses.so"
+cp -v -R doc -T "$DESTDIR/usr/share/doc/ncurses-6.5-20250809"

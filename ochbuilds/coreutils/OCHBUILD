@@ -1,0 +1,30 @@
+# name "coreutils"
+# version "9.7"
+# description "basic utility programs needed by every operating system"
+# url "https://www.gnu.org/software/coreutils/"
+# source tar "https://ftp.gnu.org/gnu/coreutils/coreutils-9.7.tar.xz"
+# source get "https://www.linuxfromscratch.org/patches/lfs/12.4/coreutils-9.7-upstream_fix-1.patch"
+# source get "https://www.linuxfromscratch.org/patches/lfs/12.4/coreutils-9.7-i18n-1.patch"
+# ---
+
+cd coreutils-9.7
+
+# apply a patch for a security problem identified upstream
+patch -Np1 -i ../coreutils-9.7-upstream_fix-1.patch
+
+# POSIX requires that programs from Coreutils recognize character boundaries correctly even in multibyte locales.
+# The following patch fixes this non-compliance and other internationalization-related bugs.
+patch -Np1 -i ../coreutils-9.7-i18n-1.patch
+
+autoreconf -fv
+automake -af
+./configure --prefix=/usr            \
+            --enable-no-install-program=kill,uptime
+
+make
+make install
+
+# Move programs to the locations specified by the FHS
+mv -v "$DESTDIR/usr/bin/chroot" "$DESTDIR/usr/sbin"
+mv -v "$DESTDIR/usr/share/man/man1/chroot.1" "$DESTDIR/usr/share/man/man8/chroot.8"
+sed -i 's/"1"/"8"/' "$DESTDIR/usr/share/man/man8/chroot.8"

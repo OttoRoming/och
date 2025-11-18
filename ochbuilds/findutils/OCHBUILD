@@ -1,0 +1,13 @@
+# name "findutils"
+# version "4.10.0"
+# description "programs to find files"
+# url "https://www.gnu.org/software/findutils/"
+# source tar "https://ftp.gnu.org/gnu/findutils/findutils-4.10.0.tar.xz"
+# ---
+
+cd findutils-4.10.0
+
+./configure --prefix=/usr --localstatedir=/var/lib/locate
+
+make
+make install

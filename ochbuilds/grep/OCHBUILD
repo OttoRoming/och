@@ -1,0 +1,13 @@
+# name "grep"
+# version "3.12"
+# description "searching through the contents of files"
+# url "https://www.gnu.org/software/grep/"
+# source tar "https://ftp.gnu.org/gnu/grep/grep-3.12.tar.xz"
+# ---
+
+cd grep-1.12
+
+sed -i "s/echo/#echo/" src/egrep.sh
+./configure --prefix=/usr
+make
+make install

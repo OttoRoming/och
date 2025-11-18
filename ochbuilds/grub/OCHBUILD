@@ -1,9 +1,13 @@
 # name "grub"
 # version "2.12"
-# description "programs for processing and formatting text and images"
-# url "https://www.gnu.org/software/groff/"
-# source tar "https://ftp.gnu.org/gnu/groff/groff-1.23.0.tar.gz"
+# description "GRand Unified Bootloader"
+# url "https://www.gnu.org/software/grub/"
+# source tar "https://ftp.gnu.org/gnu/grub/grub-2.12.tar.xz"
+# runtime "efibootmgr"
 # ---
+
+# FIXME: compile with optional dependencies
+# https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/grub-setup.html
 
 cd grub-2.12
 
@@ -11,14 +15,13 @@ unset {C,CPP,CXX,LD}FLAGS
 
 echo depends bli part_gpt > grub-core/extra_deps.lst
 
-./configure --prefix=/usr     \
-            --sysconfdir=/etc \
-            --disable-efiemu  \
-            --disable-werror
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --disable-efiemu     \
+            --with-platform=efi  \
+            --target=x86_64      \
+            --disable-werror     &&
 
 make
-
 make install
-mv -v /etc/bash_completion.d/grub /usr/share/bash-completion/completions
-
-# FIXME: Gör detta till efi https://lfs.it-privat.dk/lfs/view/stable/chapter08/grub.html
+mv -v "$DESTDIR/etc/bash_completion.d/grub" "$DESTDIR/usr/share/bash-completion/completions"

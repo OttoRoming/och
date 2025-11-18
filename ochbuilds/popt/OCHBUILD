@@ -1,0 +1,19 @@
+# name "popt"
+# version "1.19"
+# description "parse command-line options"
+# url "https://github.com/rpm-software-management/popt"
+# source tar "http://ftp.rpm.org/popt/releases/popt-1.x/popt-1.19.tar.gz"
+# ---
+
+# FIXME: https://www.linuxfromscratch.org/blfs/view/12.4/general/popt.html
+# add optional dependencies
+
+cd popt-1.19
+
+./configure --prefix=/usr --disable-static
+make
+
+make install
+
+install -v -m755 -d "$DESTDIR/usr/share/doc/popt-1.19"
+install -v -m644 doxygen/html/* "$DESTDIR/usr/share/doc/popt-1.19"

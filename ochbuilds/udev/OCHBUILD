@@ -2,9 +2,98 @@
 # version "257.8"
 # description "programs for dynamic creation of device nodes"
 # url "https://www.freedesktop.org/wiki/Software/systemd/"
-# source tar "https://github.com/systemd/systemd/archive/v257.8/systemd-257.8.tar.gz"
-# source get "https://anduin.linuxfromscratch.org/LFS/systemd-man-pages-257.8.tar.xz"
-# source get "https://anduin.linuxfromscratch.org/LFS/udev-lfs-20230818.tar.xz"
+# source tar "https://github.com/systemd/systemd/archive/v257.8/systemd-257.8.tar.gz" "f280278161446fe3838bedb970c7b3998043ad107f7627735a81483218c6f6f9"
+# source get "https://anduin.linuxfromscratch.org/LFS/systemd-man-pages-257.8.tar.xz" "89d32984d7f3cc410101806f7a2bb01ba20cad04b30c190c98387b1dd8fef7f5"
+# source get "https://anduin.linuxfromscratch.org/LFS/udev-lfs-20230818.tar.xz" "104cdde52a898c648ce346a9ed1fbe9297514656534636a6584132cf2d7428d9"
 # ---
 
-# FIXME finish this
+cd systemd-257.8
+
+# Remove two unneeded groups, render and sgx, from the default udev rules
+sed -e 's/GROUP="render"/GROUP="video"/' \
+    -e 's/GROUP="sgx", //'               \
+    -i rules.d/50-udev-default.rules.in
+
+#  Remove one udev rule requiring a full Systemd installation
+sed -i '/systemd-sysctl/s/^/#/' rules.d/99-systemd.rules.in
+
+# Adjust the hardcoded paths to network configuration files for the standalone udev installation
+sed -e '/NETWORK_DIRS/s/systemd/udev/' \
+    -i src/libsystemd/sd-network/network-util.h
+
+# Prepare Udev for compilation
+mkdir -p build
+cd       build
+
+meson setup ..                  \
+      --prefix=/usr             \
+      --buildtype=release       \
+      -D mode=release           \
+      -D dev-kvm-mode=0660      \
+      -D link-udev-shared=false \
+      -D logind=false           \
+      -D vconsole=false
+
+# Get the list of the shipped udev helpers and save it into an environment variable
+# (exporting it is not strictly necessary, but it makes building as a regular user or using a package manager easier):
+export udev_helpers=$(grep "'name' :" ../src/udev/meson.build | \
+                      awk '{print $3}' | tr -d ",'" | grep -v 'udevadm')
+
+# Only build the components needed for udev
+ninja udevadm systemd-hwdb                                           \
+      $(ninja -n | grep -Eo '(src/(lib)?udev|rules.d|hwdb.d)/[^ ]*') \
+      $(realpath libudev.so --relative-to .)                         \
+      $udev_helpers
+
+# Install the package
+install -vm755 -d "$DESTDIR/usr/lib/udev/hwdb.d"
+install -vm755 -d "$DESTDIR/usr/lib/udev/rules.d"
+install -vm755 -d "$DESTDIR/usr/lib/udev/network"
+install -vm755 -d "$DESTDIR/etc/udev/hwdb.d"
+install -vm755 -d "$DESTDIR/etc/udev/rules.d"
+install -vm755 -d "$DESTDIR/etc/udev/network"
+
+install -vm755 -d "$DESTDIR/usr/lib/pkgconfig"
+install -vm755 -d "$DESTDIR/usr/share/pkgconfig"
+
+install -vm755 udevadm                             "$DESTDIR/usr/bin/"
+install -vm755 systemd-hwdb                        "$DESTDIR/usr/bin/udev-hwdb"
+ln      -svfn  ../bin/udevadm                      "$DESTDIR/usr/sbin/udevd"
+cp      -av    libudev.so{,*[0-9]}                 "$DESTDIR/usr/lib/"
+install -vm644 ../src/libudev/libudev.h            "$DESTDIR/usr/include/"
+install -vm644 src/libudev/*.pc                    "$DESTDIR/usr/lib/pkgconfig/"
+install -vm644 src/udev/*.pc                       "$DESTDIR/usr/share/pkgconfig/"
+install -vm644 ../src/udev/udev.conf               "$DESTDIR/etc/udev/"
+install -vm644 rules.d/* ../rules.d/README         "$DESTDIR/usr/lib/udev/rules.d/"
+install -vm644 $(find ../rules.d/*.rules \
+                      -not -name '*power-switch*') "$DESTDIR/usr/lib/udev/rules.d/"
+install -vm644 hwdb.d/*  ../hwdb.d/{*.hwdb,README} "$DESTDIR/usr/lib/udev/hwdb.d/"
+install -vm755 $udev_helpers                       "$DESTDIR/usr/lib/udev"
+install -vm644 ../network/99-default.link          "$DESTDIR/usr/lib/udev/network"
+
+# Install some custom rules and support files useful in an LFS environment
+tar -xvf ../../udev-lfs-20230818.tar.xz
+make -f udev-lfs-20230818/Makefile.lfs install
+
+# Install the man pages
+tar -xf ../../systemd-man-pages-257.8.tar.xz                          \
+    --no-same-owner --strip-components=1                              \
+    -C "$DESTDIR/usr/share/man" --wildcards '*/udev*' '*/libudev*'    \
+                                  '*/systemd.link.5'                  \
+                                  '*/systemd-'{hwdb,udevd.service}.8
+
+sed 's|systemd/network|udev/network|'                                 \
+    "$DESTDIR/usr/share/man/man5/systemd.link.5"                      \
+  > "$DESTDIR/usr/share/man/man5/udev.link.5"
+
+sed 's/systemd\(\\\?-\)/udev\1/' "DESTDIR/usr/share/man/man8/systemd-hwdb.8" \
+                               > "DESTDIR/usr/share/man/man8/udev-hwdb.8"
+
+sed 's|lib.*udevd|sbin/udevd|'                                        \
+    "$DESTDIR/usr/share/man/man8/systemd-udevd.service.8"                       \
+  > "$DESTDIR/usr/share/man/man8/udevd.8"
+
+rm $DESTDIR/usr/share/man/man*/systemd* # Scary wildcards!
+
+# Finally, unset the udev_helpers variable
+unset udev_helpers

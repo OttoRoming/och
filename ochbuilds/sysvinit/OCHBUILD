@@ -1,0 +1,15 @@
+# name "sysvinit"
+# version "3.14"
+# description "programs for controlling the startup, running, and shutdown of the system"
+# url "https://savannah.nongnu.org/projects/sysvinit"
+# source tar "https://github.com/slicer69/sysvinit/releases/download/3.14/sysvinit-3.14.tar.xz"
+# source get "https://www.linuxfromscratch.org/patches/lfs/12.4/sysvinit-3.14-consolidated-1.patch"
+# ---
+
+cd sysvinit-3.14
+
+# apply a patch that removes several programs installed by other packages, clarifies a message, and fixes a compiler warning
+patch -Np1 -i ../sysvinit-3.14-consolidated-1.patch
+
+make
+make install

@@ -1,0 +1,17 @@
+# name "procps-ng"
+# version "4.0.5"
+# description "programs for monitoring processes"
+# url "https://gitlab.com/procps-ng/procps/"
+# source tar "https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-4.0.5.tar.xz"
+# ---
+
+cd procps-ng
+
+./configure --prefix=/usr                           \
+            --docdir=/usr/share/doc/procps-ng-4.0.5 \
+            --disable-static                        \
+            --disable-kill                          \
+            --enable-watch8bit
+
+make
+make install

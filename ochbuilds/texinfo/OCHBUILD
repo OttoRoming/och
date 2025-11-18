@@ -5,7 +5,7 @@
 # source tar "https://ftp.gnu.org/gnu/texinfo/texinfo-7.2.tar.xz"
 # ---
 
-cd texinfo
+cd texinfo-7.2
 
 sed 's/! $output_file eq/$output_file ne/' -i tp/Texinfo/Convert/*.pm
 ./configure --prefix=/usr

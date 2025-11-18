@@ -1,0 +1,32 @@
+# name "e2fsprogs"
+# version "1.47.3"
+# description "Utilities for handling the ext2 file system. It also supports the ext3 and ext4 journaling file systems."
+# url "https://e2fsprogs.sourceforge.net/"
+# source tar "https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v1.47.3/e2fsprogs-1.47.3.tar.gz"
+# ---
+
+cd e2fsprogs-1.47.3
+
+mkdir -v build
+cd       build
+
+../configure --prefix=/usr       \
+             --sysconfdir=/etc   \
+             --enable-elf-shlibs \
+             --disable-libblkid  \
+             --disable-libuuid   \
+             --disable-uuidd     \
+             --disable-fsck
+
+make
+make install
+
+rm -fv "$DESTDIR/usr/lib/libcom_err.a"
+rm -fv "$DESTDIR/usr/lib/libe2p.a"
+rm -fv "$DESTDIR/usr/lib/libext2fs.a"
+rm -fv "$DESTDIR/usr/lib/libss.a"
+
+gunzip -v /usr/share/info/libext2fs.info.gz
+
+makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo
+install -v -m644 doc/com_err.info "$DESTDIR/usr/share/info"

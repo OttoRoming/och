@@ -1,0 +1,11 @@
+# name "make"
+# version "4.4.1"
+# description "controlling the generation of executables and other non-source files of a package from source files"
+# url "https://www.gnu.org/software/make/"
+# source tar "https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz"
+# ---
+
+./configure --prefix=/usr
+
+make
+make install

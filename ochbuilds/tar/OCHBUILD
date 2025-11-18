@@ -1,0 +1,14 @@
+# name "tar"
+# version "1.35"
+# description "provides the ability to create tar archives as well as perform various other kinds of archive manipulation"
+# url "https://www.gnu.org/software/tar/"
+# source tar "https://ftp.gnu.org/gnu/tar/tar-1.35.tar.xz"
+# ---
+
+cd tar-1.35
+
+./configure --prefix=/usr
+
+make
+make install
+make -C doc install-html docdir=/usr/share/doc/tar-1.35

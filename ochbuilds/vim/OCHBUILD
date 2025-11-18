@@ -1,0 +1,17 @@
+# name "vim"
+# version "9.1.1629"
+# description "powerful text editor"
+# url "https://www.vim.org/"
+# source tar "https://github.com/vim/vim/archive/v9.1.1629/vim-9.1.1629.tar.gz"
+# ---
+
+cd vim-9.1.1629
+
+echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+
+./configure --prefix=/usr
+
+make
+make install
+
+ln -sv ../vim/vim91/doc "$DESTDIR/usr/share/doc/vim-9.1.1629"

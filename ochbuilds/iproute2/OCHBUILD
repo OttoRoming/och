@@ -1,0 +1,16 @@
+# name "iproute2"
+# version "6.16.0"
+# description "basic and advanced IPV4-based networking"
+# url "https://git.kernel.org/pub/scm/network/iproute2/iproute2.git"
+# source tar "https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.16.0.tar.xz"
+# ---
+
+cd iproute2-6.16.0
+
+sed -i /ARPD/d Makefile
+rm -fv man/man8/arpd.8
+
+make NETNS_RUN_DIR=/run/netns
+make SBINDIR=/usr/sbin install
+
+install -vDm644 COPYING README* -t "$DESTDIR/usr/share/doc/iproute2-6.16.0"

@@ -20,7 +20,7 @@ echo depends bli part_gpt > grub-core/extra_deps.lst
             --disable-efiemu     \
             --with-platform=efi  \
             --target=x86_64      \
-            --disable-werror     &&
+            --disable-werror
 
 make
 make install

@@ -1,0 +1,10 @@
+# name "udev"
+# version "257.8"
+# description "programs for dynamic creation of device nodes"
+# url "https://www.freedesktop.org/wiki/Software/systemd/"
+# source tar "https://github.com/systemd/systemd/archive/v257.8/systemd-257.8.tar.gz"
+# source get "https://anduin.linuxfromscratch.org/LFS/systemd-man-pages-257.8.tar.xz"
+# source get "https://anduin.linuxfromscratch.org/LFS/udev-lfs-20230818.tar.xz"
+# ---
+
+# FIXME finish this

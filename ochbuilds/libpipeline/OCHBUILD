@@ -1,0 +1,11 @@
+# name "libpipeline"
+# version "1.5.8"
+# description "library for manipulating pipelines of subprocesses in a flexible and convenient way"
+# url "https://libpipeline.nongnu.org/"
+# source tar "https://www.kernel.org/pub/linux/utils/kbd/kbd-2.8.0.tar.xz"
+# ---
+
+./configure --prefix=/usr
+
+make
+make install

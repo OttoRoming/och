@@ -3,6 +3,8 @@
 //! This module provides constants and functions for working with ANSI escape sequences
 //! for terminal control, colors, and styling.
 
+#![allow(dead_code)]
+
 /// Control Sequence Introducer - equivalent to ESC[
 pub const CSI: &str = "\x1B[";
 

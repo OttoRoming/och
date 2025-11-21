@@ -1,6 +1,8 @@
+mod ansi;
+pub mod log;
 mod progress;
+
 use std::io;
-// use libc::{ioctl, winsize, STDOUT_FILENO, TIOCGWINSZ};
 
 fn size() -> io::Result<libc::winsize> {
     let mut window_size: libc::winsize = unsafe { std::mem::zeroed() };

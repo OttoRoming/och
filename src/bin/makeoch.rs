@@ -8,8 +8,10 @@ use std::{
 };
 
 use anyhow::{Result, bail};
-use och::details::Details;
-use och::{details, err, info};
+use och::{
+    details::{self, Details},
+    terminal::log::*,
+};
 
 fn archive_package(root: &Path, details: &Details, destination_dir: &Path) -> Result<PathBuf> {
     let mut package_archive_path = root.to_path_buf();
@@ -41,20 +43,20 @@ fn makeoch() -> Result<()> {
         env::set_var("NINJAJOBS", "8");
     }
 
-    info!("Parsing OCHBUILD");
+    info("Parsing OCHBUILD");
     let root = env::current_dir()?;
     let mut ochbuild_path = root.clone();
     ochbuild_path.push("OCHBUILD");
     let contents = fs::read_to_string(&ochbuild_path).expect("Failed to read OCHBUILD file");
     let details = details::parse(contents)?;
 
-    info!(
+    info(&format!(
         "Found package \"{}\" version {}",
-        details.name, details.version
-    );
+        details.name, details.version,
+    ));
     let work_path = PathBuf::from("work");
     if fs::metadata(&work_path).is_ok() {
-        info!("Clearing work directory");
+        info("Clearing work directory");
         fs::remove_dir_all(&work_path)?;
     }
 
@@ -69,23 +71,23 @@ fn makeoch() -> Result<()> {
     }
 
     let mut source_paths = HashMap::new();
-    info!("Fetching sources");
+    info("Fetching sources");
     for source in details.sources.iter() {
         let path = source.fetch()?;
         source_paths.insert(source, path);
     }
 
-    info!("Checking sources");
+    info("Checking sources");
     for source in details.sources.iter() {
         source.check(source_paths.get(source).unwrap())?;
     }
 
-    info!("Processing sources");
+    info("Processing sources");
     for source in details.sources.iter() {
         source.process(source_paths.get(source).unwrap(), &work_path)?;
     }
 
-    info!("Running OCHBUILD");
+    info("Running OCHBUILD");
     let ochbuild_status = process::Command::new("bash")
         .arg("-e")
         .arg(ochbuild_path.to_str().unwrap())
@@ -97,7 +99,7 @@ fn makeoch() -> Result<()> {
         bail!("OCHBUILD Exited with statuscode {}", ochbuild_status)
     }
 
-    info!("Creating package archvie");
+    info("Creating package archvie");
     archive_package(&root, &details, &destination_dir)?;
 
     Ok(())
@@ -105,9 +107,7 @@ fn makeoch() -> Result<()> {
 
 fn main() {
     match makeoch() {
-        Err(e) => {
-            err!("{}", e)
-        }
+        Err(e) => err(&format!("{}", e)),
         _ => {}
     };
 }

@@ -1,16 +1,20 @@
-use std::{default::Default, path::PathBuf};
-
-use anyhow::Result;
-use once_cell::sync::Lazy;
-use ron::ser::PrettyConfig;
-use serde::{Deserialize, Serialize};
-use tokio::{
+use std::{
+    default::Default,
     fs,
-    io::{AsyncReadExt, AsyncWriteExt},
+    io::{Read, Write},
+    path::PathBuf,
 };
 
-static DATA_DIR_PATH: Lazy<PathBuf> = Lazy::new(|| PathBuf::from("/var/lib/och/"));
-static DATA_FILE_PATH: Lazy<PathBuf> = Lazy::new(|| PathBuf::from("/var/lib/och/data.ron"));
+use anyhow::Result;
+use ron::ser::PrettyConfig;
+use serde::{Deserialize, Serialize};
+
+fn data_dir_path() -> PathBuf {
+    PathBuf::from("/var/lib/och/")
+}
+fn data_file_path() -> PathBuf {
+    PathBuf::from("/var/lib/och/data.ron")
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Package {
@@ -31,30 +35,30 @@ impl Default for Data {
     }
 }
 
-pub async fn read() -> Result<Data> {
+pub fn read() -> Result<Data> {
     let mut data = Data::default();
-    let file = fs::File::open(&DATA_FILE_PATH.clone()).await;
+    let file = fs::File::open(data_file_path());
     if let Ok(mut file) = file {
         let mut source = String::new();
-        file.read_to_string(&mut source).await?;
+        file.read_to_string(&mut source)?;
         data = ron::from_str(&source)?;
     };
 
     Ok(data)
 }
 
-pub async fn write(data: &Data) -> Result<()> {
-    let mut file = match fs::File::create(&DATA_FILE_PATH.clone()).await {
+pub fn write(data: &Data) -> Result<()> {
+    let mut file = match fs::File::create(data_file_path()) {
         Ok(file) => file,
         Err(_) => {
-            if fs::metadata(&DATA_DIR_PATH.clone()).await.is_err() {
-                fs::create_dir_all(&DATA_DIR_PATH.clone()).await?;
+            if fs::metadata(data_dir_path()).is_err() {
+                fs::create_dir_all(data_dir_path())?;
             }
-            fs::File::create_new(&DATA_FILE_PATH.clone()).await?
+            fs::File::create_new(data_file_path())?
         }
     };
 
     let data_string = ron::ser::to_string_pretty(data, PrettyConfig::default())?;
-    file.write_all(data_string.as_bytes()).await?;
+    file.write_all(data_string.as_bytes())?;
     Ok(())
 }

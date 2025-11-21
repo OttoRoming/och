@@ -9,14 +9,13 @@ struct Args {
     package: String,
 }
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     let args = Args::parse();
-    let mut db = data::read().await?;
+    let mut db = data::read()?;
     dbg!(&db);
     // db.installed.push(Package { name: "()", is_explicit: (), version: (), files: () });
     dbg!(&db);
-    data::write(&db).await?;
+    data::write(&db)?;
 
     Ok(())
 }

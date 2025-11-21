@@ -1,5 +1,7 @@
 pub mod data;
 pub mod details;
+pub mod source;
+pub mod terminal;
 
 #[macro_export]
 macro_rules! info {

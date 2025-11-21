@@ -2,14 +2,10 @@ mod lexer;
 mod location;
 mod parser;
 
+use crate::source::Source;
+
 pub fn parse(source: String) -> Result<Details, parser::Error> {
     parser::Parser::new(source)?.parse()
-}
-
-#[derive(Debug, Eq, PartialEq, Hash)]
-pub enum Source {
-    Tar { url: String, hash: Option<String> },
-    Get { url: String, hash: Option<String> },
 }
 
 #[derive(Debug)]

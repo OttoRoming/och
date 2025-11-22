@@ -1,34 +1,11 @@
-use std::{collections::HashMap, env, fs, path::Path, path::PathBuf, process};
+use std::{collections::HashMap, env, fs, path::PathBuf, process};
 
 use anyhow::{Result, bail};
 use och::{
-    details::{self, Details},
+    details::{self},
+    packaging,
     terminal::log::*,
 };
-
-fn archive_package(root: &Path, details: &Details, destination_dir: &Path) -> Result<PathBuf> {
-    let mut package_archive_path = root.to_path_buf();
-    package_archive_path.push(format!("{}-{}.tar.lz", details.name, details.version));
-
-    // Create the tar.lz archive using the `tar` command
-    let tar_lz_status = std::process::Command::new("tar")
-        .arg("--owner=0")
-        .arg("--group=0")
-        .arg("--lzip")
-        .arg("--force-local")
-        .arg("-cf")
-        .arg(package_archive_path.to_str().unwrap())
-        .arg("-C")
-        .arg(destination_dir.to_str().unwrap())
-        .arg(".")
-        .status()?;
-
-    if !tar_lz_status.success() {
-        bail!("tar command exited with status {}", tar_lz_status);
-    }
-
-    Ok(package_archive_path)
-}
 
 fn makeoch() -> Result<()> {
     unsafe {
@@ -56,11 +33,11 @@ fn makeoch() -> Result<()> {
     fs::create_dir(&work_path)?;
     env::set_current_dir(&work_path)?;
     let work_path = env::current_dir()?;
-    let mut destination_dir = work_path.clone();
-    destination_dir.push("dest");
-    fs::create_dir(&destination_dir)?;
+    let mut destdir_dir = work_path.clone();
+    destdir_dir.push("dest");
+    fs::create_dir(&destdir_dir)?;
     unsafe {
-        env::set_var("DESTDIR", destination_dir.to_str().unwrap());
+        env::set_var("DESTDIR", destdir_dir.to_str().unwrap());
     }
 
     let mut source_paths = HashMap::new();
@@ -93,7 +70,7 @@ fn makeoch() -> Result<()> {
     }
 
     info("Creating package archvie");
-    archive_package(&root, &details, &destination_dir)?;
+    packaging::archive_package(&details, &destdir_dir, &root)?;
 
     Ok(())
 }

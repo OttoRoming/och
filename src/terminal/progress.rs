@@ -52,6 +52,14 @@ impl Progress {
         Ok(())
     }
 
+    pub fn add(&mut self, delta: f64, message: &str) -> io::Result<&mut Self> {
+        self.progress = f64::min(1.0, self.progress + delta);
+        print!("\r");
+        self.display(message)?;
+
+        Ok(self)
+    }
+
     pub fn update(&mut self, progress: f64, message: &str) -> io::Result<&mut Self> {
         self.progress = progress;
         print!("\r");

@@ -6,7 +6,7 @@ use std::{
     process,
 };
 
-use crate::{details::Details, terminal::Progress};
+use crate::{details::Details, tar_utils, terminal::Progress};
 
 #[derive(Debug)]
 pub enum Error {
@@ -77,7 +77,7 @@ pub fn archive_package(
     progress.start()?;
     for line_result in reader.lines() {
         let line = line_result?;
-        if let Some(speed) = line_find_speed(&line) {
+        if let Some(speed) = tar_utils::line_find_speed(&line) {
             progress.add(0.1, speed)?;
         }
     }

@@ -6,7 +6,7 @@ use std::{
     process,
 };
 
-use crate::terminal::Progress;
+use crate::{tar_utils, terminal::Progress};
 
 #[derive(Debug)]
 pub enum Error {
@@ -35,21 +35,6 @@ impl convert::From<io::Error> for Error {
 
 impl error::Error for Error {}
 
-fn line_find_bytes_read(line: &str) -> Option<u64> {
-    let re = Regex::new(r"\s\d+\s").unwrap();
-    let find = re.captures(line)?;
-    let result = find.get(0)?.as_str().parse::<u64>().ok()?;
-    Some(result)
-}
-
-fn line_find_speed(line: &str) -> Option<&str> {
-    let re = Regex::new(r"\s\(\d*\w*, (\d+\w+/s)\)$").unwrap();
-    let find = re.captures(line)?;
-    let result = find.get(0)?.as_str();
-
-    Some(result)
-}
-
 pub fn extract_tar(path: &Path, destination: &Path) -> Result<(), Error> {
     let total_bytes = fs::metadata(path)?.len();
     let mut process = process::Command::new("tar")
@@ -72,8 +57,8 @@ pub fn extract_tar(path: &Path, destination: &Path) -> Result<(), Error> {
     progress.start()?;
     for line_result in reader.lines() {
         let line = line_result?;
-        let speed = line_find_speed(&line).unwrap_or("");
-        let total_bytes_read = line_find_bytes_read(&line);
+        let speed = tar_utils::line_find_speed(&line).unwrap_or("");
+        let total_bytes_read = tar_utils::line_find_bytes_read_or_written(&line);
 
         if let Some(total_bytes_read) = total_bytes_read {
             progress.update(total_bytes_read as f64 / total_bytes as f64, speed)?;

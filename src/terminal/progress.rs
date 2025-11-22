@@ -3,6 +3,8 @@ use std::{
     io::{self, Write},
 };
 
+use owo_colors::OwoColorize;
+
 pub struct Progress {
     progress: f64,
 }
@@ -16,29 +18,27 @@ impl default::Default for Progress {
 impl Progress {
     fn display(&mut self, message: &str) -> io::Result<&mut Self> {
         let columns = match super::size() {
-            Ok(v) => v.ws_col as f64,
-            Err(_) => 0.0,
+            Ok(v) => v.ws_col as usize,
+            Err(_) => 0,
         };
 
-        let progress_char_count = columns - message.len() as f64 - 3.0;
-        let active_progress_char_count = self.progress * progress_char_count;
+        match columns.checked_sub(message.len() + 2) {
+            Some(width) => {
+                let active_width = (self.progress * width as f64) as usize;
+                let inactive_width = width - active_width as usize;
 
-        // if we don't have space for the progressbar only print the label
-        if progress_char_count < 0.0 {
-            print!("{}", message);
-        } else if message == "" {
-            print!(
-                "[{: <1$}]",
-                "o".repeat(active_progress_char_count as usize),
-                progress_char_count as usize,
-            )
-        } else {
-            print!(
-                "{} [{: <2$}]",
-                message,
-                "o".repeat(active_progress_char_count as usize),
-                progress_char_count as usize,
-            )
+                print!(
+                    "{message}{open}{active}{inactive}{close}",
+                    message = message.bold(),
+                    open = "[".dimmed(),
+                    active = "o".repeat(active_width).yellow(),
+                    inactive = " ".repeat(inactive_width),
+                    close = "]".dimmed(),
+                )
+            }
+            None => {
+                print!("{}", message);
+            }
         }
 
         io::stdout().flush()?;

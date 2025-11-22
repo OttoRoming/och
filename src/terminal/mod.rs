@@ -1,4 +1,3 @@
-mod ansi;
 pub mod log;
 mod progress;
 

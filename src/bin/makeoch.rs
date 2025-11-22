@@ -1,13 +1,92 @@
-use std::{collections::HashMap, env, fs, path::PathBuf, process};
+use std::{collections::HashMap, convert, env, error, fmt, fs, io, path::PathBuf};
 
-use anyhow::{Result, bail};
 use och::{
     details::{self},
-    packaging,
+    packaging, source,
     terminal::log::*,
 };
 
-fn makeoch() -> Result<()> {
+#[derive(Debug)]
+enum Error {
+    FailedToReadOchBuild,
+    Details(details::Error),
+    Io(io::Error),
+    SourceFetch(source::FetchError),
+    SourceCheck(source::CheckError),
+    SourceProcess(source::ProcesError),
+    Packaging(packaging::Error),
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::FailedToReadOchBuild => {
+                write!(
+                    f,
+                    "Failed to read OCHBUILD, hint: are you sure that you are in a directory with an OCHBUILD file?"
+                )
+            }
+            Self::Details(err) => {
+                write!(f, "failed to parse OCHBUILD: {}", err)
+            }
+            Self::Io(err) => {
+                write!(f, "io error: {}", err)
+            }
+            Self::SourceFetch(err) => {
+                write!(f, "source fetch error: {}", err)
+            }
+            Self::SourceCheck(err) => {
+                write!(f, "source check error: {}", err)
+            }
+            Self::SourceProcess(err) => {
+                write!(f, "source processing error: {}", err)
+            }
+            Self::Packaging(err) => {
+                write!(f, "packaging error: {}", err)
+            }
+        }
+    }
+}
+
+impl convert::From<io::Error> for Error {
+    fn from(value: io::Error) -> Self {
+        Error::Io(value)
+    }
+}
+
+impl convert::From<details::Error> for Error {
+    fn from(value: details::Error) -> Self {
+        Error::Details(value)
+    }
+}
+
+impl convert::From<source::FetchError> for Error {
+    fn from(value: source::FetchError) -> Self {
+        Error::SourceFetch(value)
+    }
+}
+
+impl convert::From<source::CheckError> for Error {
+    fn from(value: source::CheckError) -> Self {
+        Error::SourceCheck(value)
+    }
+}
+
+impl convert::From<source::ProcesError> for Error {
+    fn from(value: source::ProcesError) -> Self {
+        Error::SourceProcess(value)
+    }
+}
+
+impl convert::From<packaging::Error> for Error {
+    fn from(value: packaging::Error) -> Self {
+        Error::Packaging(value)
+    }
+}
+
+impl error::Error for Error {}
+
+fn makeoch() -> Result<(), Error> {
     unsafe {
         env::set_var("MAKEFLAGS", "-j8");
         env::set_var("NINJAJOBS", "8");
@@ -17,7 +96,7 @@ fn makeoch() -> Result<()> {
     let root = env::current_dir()?;
     let mut ochbuild_path = root.clone();
     ochbuild_path.push("OCHBUILD");
-    let contents = fs::read_to_string(&ochbuild_path).expect("Failed to read OCHBUILD file");
+    let contents = fs::read_to_string(&ochbuild_path).map_err(|_| Error::FailedToReadOchBuild)?;
     let details = details::parse(contents)?;
 
     info(&format!(
@@ -58,16 +137,7 @@ fn makeoch() -> Result<()> {
     }
 
     info("Running OCHBUILD");
-    let ochbuild_status = process::Command::new("bash")
-        .arg("-e")
-        .arg(ochbuild_path.to_str().unwrap())
-        .stdout(std::process::Stdio::inherit())
-        .stderr(std::process::Stdio::inherit())
-        .status()?;
-
-    if !ochbuild_status.success() {
-        bail!("OCHBUILD Exited with statuscode {}", ochbuild_status)
-    }
+    packaging::run_ochbuild(&ochbuild_path)?;
 
     info("Creating package archvie");
     packaging::archive_package(&details, &destdir_dir, &root)?;

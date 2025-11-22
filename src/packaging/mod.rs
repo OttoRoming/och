@@ -11,6 +11,7 @@ use crate::{details::Details, tar_utils, terminal::Progress};
 pub enum Error {
     Io(io::Error),
     TarFailed,
+    OchBuildFailed(Option<i32>),
 }
 
 impl fmt::Display for Error {
@@ -18,6 +19,13 @@ impl fmt::Display for Error {
         match &self {
             &Self::TarFailed => {
                 write!(f, "Failed to archive package")
+            }
+            &Self::OchBuildFailed(code_option) => {
+                let code = match code_option {
+                    Some(v) => format!("{}", v),
+                    None => "unknown".to_string(),
+                };
+                write!(f, "OCHBUILD exited with statuscode {}", code)
             }
             &Self::Io(err) => {
                 write!(f, "io: {}", err)
@@ -77,5 +85,21 @@ pub fn archive_package(
         Ok(package_archive_path)
     } else {
         Err(Error::TarFailed)
+    }
+}
+
+/// Executes a OCHBUILD script
+pub fn run_ochbuild(ochbuild: &Path) -> Result<(), Error> {
+    let ochbuild_status = process::Command::new("bash")
+        .arg("-e")
+        .arg(ochbuild.to_str().unwrap())
+        .stdout(std::process::Stdio::inherit())
+        .stderr(std::process::Stdio::inherit())
+        .status()?;
+
+    if ochbuild_status.success() {
+        Ok(())
+    } else {
+        Err(Error::OchBuildFailed(ochbuild_status.code()))
     }
 }

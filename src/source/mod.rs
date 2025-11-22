@@ -7,6 +7,10 @@ mod check;
 mod fetch;
 mod process;
 
+pub use check::Error as CheckError;
+pub use fetch::Error as FetchError;
+pub use process::Error as ProcesError;
+
 #[derive(Debug, Eq, PartialEq, Hash)]
 pub enum Source {
     Tar { url: String, hash: Option<String> },

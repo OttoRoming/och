@@ -4,7 +4,9 @@ mod parser;
 
 use crate::source::Source;
 
-pub fn parse(source: String) -> Result<Details, parser::Error> {
+pub use parser::Error;
+
+pub fn parse(source: String) -> Result<Details, Error> {
     parser::Parser::new(source)?.parse()
 }
 

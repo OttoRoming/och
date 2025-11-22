@@ -1,17 +1,11 @@
-use std::{
-    default::Default,
-    fs,
-    io::{Read, Write},
-    path::PathBuf,
-};
+use std::path::PathBuf;
 
-use serde::{Deserialize, Serialize};
-
+/// Data for locally installed packages
 pub mod local;
+
+/// Data for packages available in remote sync repository
+pub mod sync;
 
 fn data_dir_path() -> PathBuf {
     PathBuf::from("/var/lib/och/")
-}
-fn sync_data_file_path() -> PathBuf {
-    PathBuf::from("/var/lib/och/sync")
 }

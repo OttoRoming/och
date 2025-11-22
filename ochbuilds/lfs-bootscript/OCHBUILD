@@ -2,9 +2,9 @@
 # version "20250827"
 # description "scripts to start/stop the OSA system at bootup/shutdown"
 # url "https://linuxfromscratch.org/lfs/"
-# source tar "https://www.linuxfromscratch.org/lfs/downloads/12.4/lfs-bootscripts-20250827.tar.xz"
+# source tar "https://www.linuxfromscratch.org/lfs/downloads/12.4/lfs-bootscripts-20250827.tar.xz" "13ee5d50b7a35f4d94760d9f7617a3f17af3e0a33118f415eb898a0276db47b3"
 # ---
 
-cd lfs-bootscript-20250827
+cd lfs-bootscripts-20250827
 
 make install

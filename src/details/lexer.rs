@@ -1,5 +1,4 @@
 use super::location::{Location, Region};
-use std::{error, fmt};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TokenKind {
@@ -22,39 +21,16 @@ pub struct Token {
     pub region: Region,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(thiserror::Error, Clone, Debug, PartialEq, Eq)]
 pub enum Error {
+    #[error("Unexpected end of description (did you forget \"---\")")]
     UnexpectedEOD,
+    #[error("{location} Found unexpected character \"{character}\"")]
     UnexpectedCharacter { location: Location, character: char },
+    #[error("{region} Unknown keyword \"{name}\"")]
     UnknownKeyword { region: Region, name: String },
+    #[error("{locaiton} EOD Token is too short :(")]
     EODTokenTooShort { locaiton: Location },
-}
-
-impl error::Error for Error {}
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::UnexpectedCharacter {
-                location,
-                character,
-            } => {
-                write!(
-                    f,
-                    "{} Found unexpected character \"{}\"",
-                    location, character
-                )
-            }
-            Self::UnknownKeyword { region, name } => {
-                write!(f, "{} Unknown keyword \"{}\"", region, name)
-            }
-            Self::UnexpectedEOD => {
-                write!(f, "Unexpected end of description (did you forget \"---\")")
-            }
-            Self::EODTokenTooShort { locaiton: location } => {
-                writeln!(f, "{} EOD Token is too short :(", location)
-            }
-        }
-    }
 }
 
 pub struct Lexer {

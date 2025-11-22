@@ -2,31 +2,21 @@ use super::{
     Details, Source,
     lexer::{self, Lexer, Token, TokenKind},
 };
-use std::{error, fmt};
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
 pub enum Error {
-    Lexer(lexer::Error),
+    #[error("Lexer error: {0}")]
+    Lexer(#[from] lexer::Error),
+    #[error("{0:?} Unexpected token")]
     UnexpectedToken(Token),
+    #[error("No tokens found")]
     NoTokens,
+    #[error("Details is missing name")]
     MissingName,
+    #[error("Details is missing version")]
     MissingVersion,
+    #[error("Details is missing description")]
     MissingDescripiton,
-}
-impl error::Error for Error {}
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Error::Lexer(error) => write!(f, "Lexer error {}", error),
-            Error::UnexpectedToken(token) => {
-                write!(f, "{} Unexpected token {:?}", token.region, token.kind)
-            }
-            Error::NoTokens => write!(f, "No tokens found"),
-            Error::MissingName => write!(f, "Details is missing name"),
-            Error::MissingVersion => write!(f, "Details is missing version"),
-            Error::MissingDescripiton => write!(f, "Details is missing description"),
-        }
-    }
 }
 
 pub struct Parser {

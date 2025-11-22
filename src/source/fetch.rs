@@ -1,43 +1,20 @@
 use curl::easy::{Easy, WriteError};
-use std::io::Write;
-use std::path::Path;
-use std::sync::{Arc, Mutex};
-use std::{convert, error, fmt, fs, io};
+use std::{
+    fs, io,
+    io::Write,
+    path::Path,
+    sync::{Arc, Mutex},
+};
 
 use crate::terminal::Progress;
 
-#[derive(Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
-    Io(io::Error),
-    Curl(curl::Error),
+    #[error("io: {0}")]
+    Io(#[from] io::Error),
+    #[error("curl: {0}")]
+    Curl(#[from] curl::Error),
 }
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self {
-            &Self::Io(err) => {
-                write!(f, "io: {}", err)
-            }
-            &Self::Curl(err) => {
-                write!(f, "curl: {}", err)
-            }
-        }
-    }
-}
-
-impl convert::From<io::Error> for Error {
-    fn from(value: io::Error) -> Self {
-        Self::Io(value)
-    }
-}
-
-impl convert::From<curl::Error> for Error {
-    fn from(value: curl::Error) -> Self {
-        Self::Curl(value)
-    }
-}
-
-impl error::Error for Error {}
 
 pub fn url(url: &str, path: &Path) -> Result<(), Error> {
     let mut handle = Easy::new();

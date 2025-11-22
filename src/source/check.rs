@@ -1,36 +1,14 @@
-use std::path::Path;
-use std::{convert, error, fmt, fs, io};
+use std::{fs, io, path::Path};
 
-#[derive(Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
-    Io(io::Error),
+    #[error("io: {0}")]
+    Io(#[from] io::Error),
+    #[error("missing hash, found {found}")]
     MissingHash { found: String },
+    #[error("unexpected hash, expected {expected}, found {found}")]
     WrongHash { expected: String, found: String },
 }
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self {
-            &Self::Io(err) => {
-                write!(f, "io: {}", err)
-            }
-            &Self::MissingHash { found } => {
-                write!(f, "missing hash, found {}", found)
-            }
-            &Self::WrongHash { expected, found } => {
-                write!(f, "unexpected hash, expected {}, found {}", expected, found)
-            }
-        }
-    }
-}
-
-impl convert::From<io::Error> for Error {
-    fn from(value: io::Error) -> Self {
-        Self::Io(value)
-    }
-}
-
-impl error::Error for Error {}
 
 pub fn sha256(path: &Path) -> io::Result<String> {
     let bytes = fs::read(path)?;

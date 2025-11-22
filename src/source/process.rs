@@ -1,5 +1,5 @@
 use std::{
-    convert, error, fmt, fs,
+    fs,
     io::{self, BufRead},
     path::Path,
     process,
@@ -7,32 +7,13 @@ use std::{
 
 use crate::{tar_utils, terminal::Progress};
 
-#[derive(Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("io: {0}")]
+    Io(#[from] io::Error),
+    #[error("failed to extract archive")]
     FailedExtraction,
-    Io(io::Error),
 }
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self {
-            &Self::FailedExtraction => {
-                write!(f, "Failed to extract archive")
-            }
-            &Self::Io(err) => {
-                write!(f, "io: {}", err)
-            }
-        }
-    }
-}
-
-impl convert::From<io::Error> for Error {
-    fn from(value: io::Error) -> Self {
-        Self::Io(value)
-    }
-}
-
-impl error::Error for Error {}
 
 pub fn extract_tar(path: &Path, destination: &Path) -> Result<(), Error> {
     let total_bytes = fs::metadata(path)?.len();

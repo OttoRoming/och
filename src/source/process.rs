@@ -1,4 +1,3 @@
-use regex::Regex;
 use std::{
     convert, error, fmt, fs,
     io::{self, BufRead},

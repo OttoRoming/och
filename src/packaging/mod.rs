@@ -1,4 +1,3 @@
-use regex::Regex;
 use std::{
     convert, error, fmt,
     io::{self, BufRead},
@@ -34,15 +33,6 @@ impl convert::From<io::Error> for Error {
 }
 
 impl error::Error for Error {}
-
-// FIXME: code duplication of src/source/process.rs
-fn line_find_speed(line: &str) -> Option<&str> {
-    let re = Regex::new(r"\s\(\d*\w*, (\d+\w+/s)\)$").unwrap();
-    let find = re.captures(line)?;
-    let result = find.get(0)?.as_str();
-
-    Some(result)
-}
 
 pub fn archive_package(
     details: &Details,

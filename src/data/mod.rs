@@ -13,7 +13,7 @@ fn data_dir_path() -> PathBuf {
     PathBuf::from("/var/lib/och/")
 }
 fn data_file_path() -> PathBuf {
-    PathBuf::from("/var/lib/och/data.ron")
+    PathBuf::from("/var/lib/och/local")
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -13,7 +13,12 @@ fn main() -> Result<()> {
     let args = Args::parse();
     let mut db = data::read()?;
     dbg!(&db);
-    // db.installed.push(Package { name: "()", is_explicit: (), version: (), files: () });
+    db.installed.push(data::Package {
+        name: args.package,
+        is_explicit: true,
+        version: "0.1.0".to_string(),
+        files: vec![],
+    });
     dbg!(&db);
     data::write(&db)?;
 

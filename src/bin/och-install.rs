@@ -1,6 +1,6 @@
-use anyhow::Result;
 use clap::Parser;
 use och::data::{self};
+use std::error;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -9,7 +9,7 @@ struct Args {
     package: String,
 }
 
-fn main() -> Result<()> {
+fn main() -> Result<(), Box<dyn error::Error>> {
     let args = Args::parse();
     let mut db = data::local::read()?;
     dbg!(&db);

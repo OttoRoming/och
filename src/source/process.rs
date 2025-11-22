@@ -10,15 +10,15 @@ use crate::terminal::Progress;
 
 #[derive(Debug)]
 pub enum Error {
-    UnfetchedSource,
+    FailedExtraction,
     Io(io::Error),
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self {
-            &Self::UnfetchedSource => {
-                write!(f, "Attempted to process unfetched source")
+            &Self::FailedExtraction => {
+                write!(f, "Failed to extract archive")
             }
             &Self::Io(err) => {
                 write!(f, "io: {}", err)
@@ -81,5 +81,9 @@ pub fn extract_tar(path: &Path, destination: &Path) -> Result<(), Error> {
     }
     progress.finish()?;
 
-    Ok(())
+    if process.wait()?.success() {
+        Ok(())
+    } else {
+        Err(Error::FailedExtraction)
+    }
 }

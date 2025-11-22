@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::{
-    fs,
+    error, fs,
     io::{Read, Write},
     path::PathBuf,
 };
@@ -28,7 +28,7 @@ impl Default for Data {
     }
 }
 
-pub fn read() -> anyhow::Result<Data> {
+pub fn read() -> Result<Data, Box<dyn error::Error>> {
     let mut data = Data::default();
     let file = fs::File::open(local_data_file_path());
     if let Ok(mut file) = file {
@@ -40,7 +40,7 @@ pub fn read() -> anyhow::Result<Data> {
     Ok(data)
 }
 
-pub fn write(data: &Data) -> anyhow::Result<()> {
+pub fn write(data: &Data) -> Result<(), Box<dyn error::Error>> {
     let mut file = match fs::File::create(local_data_file_path()) {
         Ok(file) => file,
         Err(_) => {

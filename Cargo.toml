@@ -4,12 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-futures-util = "0.3.31"
 sha256 = "1.0.3"
-anyhow = "1.0.100"
 serde = { version = "1.0.228", features = ["derive"] }
 clap = { version = "4.5.51", features = ["derive"] }
-ron = "=0.10.1"
 libc = "0.2.177"
 curl = "0.4.49"
 regex = "1.12.2"

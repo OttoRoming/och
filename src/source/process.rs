@@ -13,6 +13,8 @@ pub enum Error {
     Io(#[from] io::Error),
     #[error("failed to extract archive")]
     FailedExtraction,
+    #[error("failed to checkout git commit")]
+    FailedGitCheckout,
 }
 
 pub fn extract_tar(path: &Path, destination: &Path) -> Result<(), Error> {
@@ -50,5 +52,22 @@ pub fn extract_tar(path: &Path, destination: &Path) -> Result<(), Error> {
         Ok(())
     } else {
         Err(Error::FailedExtraction)
+    }
+}
+
+pub fn checkout_git_commit(path: &Path, commit_hash: &str) -> Result<(), Error> {
+    let status = process::Command::new("git")
+        .arg("-C")
+        .arg(path)
+        .arg("checkout")
+        .arg(commit_hash)
+        .stdout(process::Stdio::null())
+        .stderr(process::Stdio::null())
+        .status()?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        Err(Error::FailedGitCheckout)
     }
 }

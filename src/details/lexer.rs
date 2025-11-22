@@ -11,6 +11,7 @@ pub enum TokenKind {
     KeywordRuntime,
     KeywordGet,
     KeywordTar,
+    KeywordGit,
     String(String),
     EOD,
 }
@@ -102,6 +103,7 @@ impl Lexer {
             "source" => TokenKind::KeywordSource,
             "get" => TokenKind::KeywordGet,
             "tar" => TokenKind::KeywordTar,
+            "git" => TokenKind::KeywordGit,
 
             "build" => TokenKind::KeywordBuild,
             "runtime" => TokenKind::KeywordRuntime,

@@ -1,5 +1,5 @@
 use std::{
-    env, fmt, io,
+    fmt,
     path::{Path, PathBuf},
 };
 
@@ -15,6 +15,7 @@ pub use process::Error as ProcesError;
 pub enum Source {
     Tar { url: String, hash: Option<String> },
     Get { url: String, hash: Option<String> },
+    Git { url: String, commit_hash: String },
 }
 
 impl fmt::Display for Source {
@@ -26,30 +27,21 @@ impl fmt::Display for Source {
             Self::Tar { url, hash: _ } => {
                 write!(f, "tar({})", url)
             }
+            Self::Git { url, commit_hash } => {
+                write!(f, "git({}, {})", url, commit_hash)
+            }
         }
     }
-}
-
-fn url_filename(url: &str) -> io::Result<PathBuf> {
-    let mut path = env::current_dir()?;
-
-    match PathBuf::from(url).file_name() {
-        Some(s) => path.push(s),
-        None => path.push("file"),
-    }
-
-    Ok(path)
 }
 
 impl Source {
     pub fn fetch(&self) -> Result<PathBuf, fetch::Error> {
         match self {
-            Source::Get { url, hash: _ } | Source::Tar { url, hash: _ } => {
-                let filename = url_filename(url)?;
-                fetch::url(url, &filename)?;
-
-                Ok(filename)
-            }
+            Source::Get { url, hash: _ } | Source::Tar { url, hash: _ } => Ok(fetch::url(url)?),
+            Source::Git {
+                url,
+                commit_hash: _,
+            } => Ok(fetch::git(url)?),
         }
     }
 
@@ -70,6 +62,10 @@ impl Source {
                     .into());
                 }
             }
+            Source::Git {
+                url: _,
+                commit_hash: _,
+            } => { /* No check for git sources */ }
         }
 
         Ok(())
@@ -80,6 +76,10 @@ impl Source {
             Source::Tar { url: _, hash: _ } => {
                 process::extract_tar(path, destination)?;
             }
+            Source::Git {
+                url: _,
+                commit_hash,
+            } => process::checkout_git_commit(path, &commit_hash)?,
             Source::Get { url: _, hash: _ } => {}
         }
 

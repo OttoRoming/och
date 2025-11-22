@@ -1,8 +1,10 @@
 use curl::easy::{Easy, WriteError};
+use regex::Regex;
 use std::{
-    fs, io,
-    io::Write,
-    path::Path,
+    env, fs,
+    io::{self, BufRead, Write},
+    path::PathBuf,
+    process,
     sync::{Arc, Mutex},
 };
 
@@ -14,9 +16,24 @@ pub enum Error {
     Io(#[from] io::Error),
     #[error("curl: {0}")]
     Curl(#[from] curl::Error),
+    #[error("failed to clone git repository")]
+    FailedGitClone,
+    #[error("git clone did not output destination path")]
+    MissingGitCloneDestination,
 }
 
-pub fn url(url: &str, path: &Path) -> Result<(), Error> {
+fn url_filename(url: &str) -> io::Result<PathBuf> {
+    let mut path = env::current_dir()?;
+
+    match PathBuf::from(url).file_name() {
+        Some(s) => path.push(s),
+        None => path.push("file"),
+    }
+
+    Ok(path)
+}
+
+pub fn url(url: &str) -> Result<PathBuf, Error> {
     let mut handle = Easy::new();
     handle.url(url)?;
     handle.progress(true)?;
@@ -25,7 +42,8 @@ pub fn url(url: &str, path: &Path) -> Result<(), Error> {
     handle.follow_location(true)?; // Follow redirects
     handle.useragent("Mozilla/5.0 (compatible; curl)")?; // Set a user agent
 
-    let file = fs::File::create(path)?;
+    let path = url_filename(url)?;
+    let file = fs::File::create(&path)?;
     let mut file = std::io::BufWriter::new(file); // Add buffering
 
     let mut transfer = handle.transfer();
@@ -57,5 +75,48 @@ pub fn url(url: &str, path: &Path) -> Result<(), Error> {
     result?;
     progress.lock().unwrap().finish().unwrap();
 
-    Ok(())
+    Ok(path)
+}
+
+pub fn find_git_clone_destination(line: &str) -> Option<PathBuf> {
+    let re = Regex::new(r"^Cloning into '(\S+)'...$").unwrap();
+
+    if let Some(captures) = re.captures(line) {
+        if let Some(matched) = captures.get(1) {
+            return Some(PathBuf::from(matched.as_str()));
+        }
+        None
+    } else {
+        None
+    }
+}
+
+pub fn git(url: &str) -> Result<PathBuf, Error> {
+    let mut process = process::Command::new("git")
+        .arg("clone")
+        .arg(url)
+        .stdout(process::Stdio::piped())
+        .stderr(process::Stdio::piped())
+        .spawn()?;
+
+    let stderr = process.stderr.take().expect("stderr piped");
+    let reader = io::BufReader::new(stderr);
+
+    let mut path = Option::<PathBuf>::None;
+    for line_result in reader.lines() {
+        let line = line_result?;
+        if let Some(found_path) = find_git_clone_destination(&line) {
+            path = Some(found_path);
+        }
+    }
+
+    if process.wait()?.success() {
+        if let Some(cloned_path) = path {
+            Ok(cloned_path)
+        } else {
+            Err(Error::MissingGitCloneDestination)
+        }
+    } else {
+        Err(Error::FailedGitClone)
+    }
 }

@@ -1,0 +1,12 @@
+# name "och"
+# version "0.1.0"
+# description "Package manager"
+# url "https://github.com/OttoRoming/och"
+# source git "https://github.com/OttoRoming/och" "48b05033210fde6d31d1e5b3d627d7b356e64cf7"
+# ---
+
+cd och
+
+cargo build --release
+
+install -Dm755 target/release/och "$DESTDIR/usr/bin/och"

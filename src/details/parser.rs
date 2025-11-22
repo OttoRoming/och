@@ -162,6 +162,25 @@ impl Parser {
         Ok(Source::Get { url, hash })
     }
 
+    fn parse_source_git(&mut self) -> Result<Source, Error> {
+        assert_eq!(self.current().kind, TokenKind::KeywordGit);
+        self.advance();
+
+        let url = match &self.current().kind {
+            TokenKind::String(s) => s.to_string(),
+            _ => return Err(Error::UnexpectedToken(self.current().clone())),
+        };
+        self.advance();
+
+        let commit_hash = match &self.current().kind {
+            TokenKind::String(s) => s.to_string(),
+            _ => return Err(Error::UnexpectedToken(self.current().clone())),
+        };
+        self.advance();
+
+        Ok(Source::Git { url, commit_hash })
+    }
+
     fn parse_source(&mut self) -> Result<Source, Error> {
         assert_eq!(self.current().kind, TokenKind::KeywordSource);
         self.advance();
@@ -169,6 +188,7 @@ impl Parser {
         match self.current().kind {
             TokenKind::KeywordTar => self.parse_source_tar(),
             TokenKind::KeywordGet => self.parse_source_get(),
+            TokenKind::KeywordGit => self.parse_source_git(),
             _ => Err(Error::UnexpectedToken(self.current().clone())),
         }
     }

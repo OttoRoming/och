@@ -1,4 +1,4 @@
-use std::{collections::HashMap, convert, env, error, fmt, fs, io, path::PathBuf};
+use std::{collections::HashMap, env, fs, io, path::PathBuf};
 
 use och::{
     details::{self},
@@ -6,85 +6,25 @@ use och::{
     terminal::log::*,
 };
 
-#[derive(Debug)]
+#[derive(thiserror::Error, Debug)]
 enum Error {
+    #[error(
+        "Failed to read OCHBUILD, hint: are you sure that you are in a directory with an OCHBUILD file?"
+    )]
     FailedToReadOchBuild,
-    Details(details::Error),
-    Io(io::Error),
-    SourceFetch(source::FetchError),
-    SourceCheck(source::CheckError),
-    SourceProcess(source::ProcesError),
-    Packaging(packaging::Error),
+    #[error("failed to parse OCHBUILD: {0}")]
+    Details(#[from] details::Error),
+    #[error("io error: {0}")]
+    Io(#[from] io::Error),
+    #[error("source fetch error: {0}")]
+    SourceFetch(#[from] source::FetchError),
+    #[error("source check error: {0}")]
+    SourceCheck(#[from] source::CheckError),
+    #[error("source processing error: {0}")]
+    SourceProcess(#[from] source::ProcesError),
+    #[error("packaging error: {0}")]
+    Packaging(#[from] packaging::Error),
 }
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::FailedToReadOchBuild => {
-                write!(
-                    f,
-                    "Failed to read OCHBUILD, hint: are you sure that you are in a directory with an OCHBUILD file?"
-                )
-            }
-            Self::Details(err) => {
-                write!(f, "failed to parse OCHBUILD: {}", err)
-            }
-            Self::Io(err) => {
-                write!(f, "io error: {}", err)
-            }
-            Self::SourceFetch(err) => {
-                write!(f, "source fetch error: {}", err)
-            }
-            Self::SourceCheck(err) => {
-                write!(f, "source check error: {}", err)
-            }
-            Self::SourceProcess(err) => {
-                write!(f, "source processing error: {}", err)
-            }
-            Self::Packaging(err) => {
-                write!(f, "packaging error: {}", err)
-            }
-        }
-    }
-}
-
-impl convert::From<io::Error> for Error {
-    fn from(value: io::Error) -> Self {
-        Error::Io(value)
-    }
-}
-
-impl convert::From<details::Error> for Error {
-    fn from(value: details::Error) -> Self {
-        Error::Details(value)
-    }
-}
-
-impl convert::From<source::FetchError> for Error {
-    fn from(value: source::FetchError) -> Self {
-        Error::SourceFetch(value)
-    }
-}
-
-impl convert::From<source::CheckError> for Error {
-    fn from(value: source::CheckError) -> Self {
-        Error::SourceCheck(value)
-    }
-}
-
-impl convert::From<source::ProcesError> for Error {
-    fn from(value: source::ProcesError) -> Self {
-        Error::SourceProcess(value)
-    }
-}
-
-impl convert::From<packaging::Error> for Error {
-    fn from(value: packaging::Error) -> Self {
-        Error::Packaging(value)
-    }
-}
-
-impl error::Error for Error {}
 
 fn makeoch() -> Result<(), Error> {
     unsafe {

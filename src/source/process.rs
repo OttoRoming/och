@@ -58,7 +58,7 @@ pub fn extract_tar(path: &Path, destination: &Path) -> Result<(), Error> {
     for line_result in reader.lines() {
         let line = line_result?;
         let speed = tar_utils::line_find_speed(&line).unwrap_or("");
-        let total_bytes_read = tar_utils::line_find_bytes_read_or_written(&line);
+        let total_bytes_read = tar_utils::line_find_bytes_processed(&line);
 
         if let Some(total_bytes_read) = total_bytes_read {
             progress.update(total_bytes_read as f64 / total_bytes as f64, speed)?;

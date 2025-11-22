@@ -16,6 +16,7 @@ impl default::Default for Progress {
 }
 
 impl Progress {
+    /// Display the current progressbar written to stdout without any carrige return or newline
     fn display(&mut self, message: &str) -> io::Result<&mut Self> {
         let columns = match super::size() {
             Ok(v) => v.ws_col as usize,
@@ -45,6 +46,13 @@ impl Progress {
         Ok(self)
     }
 
+    /// Clamps the progressbar's progress to between 0.0 and 1.0
+    fn clamp(&mut self) -> &mut Self {
+        self.progress = self.progress.clamp(0.0, 1.0);
+        self
+    }
+
+    /// Starts displaying the progressbar
     pub fn start(&mut self) -> io::Result<()> {
         self.progress = 0.0;
         self.display("")?;
@@ -52,22 +60,27 @@ impl Progress {
         Ok(())
     }
 
+    /// Mutates the current progress of the progressbar with a message
     pub fn add(&mut self, delta: f64, message: &str) -> io::Result<&mut Self> {
-        self.progress = f64::min(1.0, self.progress + delta);
+        self.progress += delta;
+        self.clamp();
         print!("\r");
         self.display(message)?;
 
         Ok(self)
     }
 
+    /// Updates the progressbar with a message
     pub fn update(&mut self, progress: f64, message: &str) -> io::Result<&mut Self> {
         self.progress = progress;
+        self.clamp();
         print!("\r");
         self.display(message)?;
 
         Ok(self)
     }
 
+    /// Finishes displaying the progressbar and prints a newline
     pub fn finish(&mut self) -> io::Result<&mut Self> {
         self.progress = 1.0;
         print!("\r");

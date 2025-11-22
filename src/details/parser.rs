@@ -4,10 +4,11 @@ use super::{
 };
 use std::{error, fmt};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Error {
     Lexer(lexer::Error),
     UnexpectedToken(Token),
+    NoTokens,
     MissingName,
     MissingVersion,
     MissingDescripiton,
@@ -20,6 +21,7 @@ impl fmt::Display for Error {
             Error::UnexpectedToken(token) => {
                 write!(f, "{} Unexpected token {:?}", token.region, token.kind)
             }
+            Error::NoTokens => write!(f, "No tokens found"),
             Error::MissingName => write!(f, "Details is missing name"),
             Error::MissingVersion => write!(f, "Details is missing version"),
             Error::MissingDescripiton => write!(f, "Details is missing description"),
@@ -182,6 +184,10 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Result<Details, Error> {
+        if self.tokens.len() == 0 {
+            return Err(Error::NoTokens);
+        }
+
         let mut name = None;
         let mut version = None;
         let mut description = None;

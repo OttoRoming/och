@@ -1,6 +1,8 @@
 mod lexer;
 mod location;
 mod parser;
+#[cfg(test)]
+mod test;
 
 use crate::source::Source;
 

@@ -22,7 +22,7 @@ pub struct Token {
     pub region: Region,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Error {
     UnexpectedEOD,
     UnexpectedCharacter { location: Location, character: char },

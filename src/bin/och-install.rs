@@ -11,16 +11,16 @@ struct Args {
 
 fn main() -> Result<()> {
     let args = Args::parse();
-    let mut db = data::read()?;
+    let mut db = data::local::read()?;
     dbg!(&db);
-    db.installed.push(data::Package {
+    db.installed.push(data::local::Package {
         name: args.package,
         is_explicit: true,
         version: "0.1.0".to_string(),
         files: vec![],
     });
     dbg!(&db);
-    data::write(&db)?;
+    data::local::write(&db)?;
 
     Ok(())
 }

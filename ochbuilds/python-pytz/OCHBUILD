@@ -1,0 +1,11 @@
+# name "python-pytz"
+# version "2025.2"
+# description "brings the Olson tz database into Python"
+# url "https://pythonhosted.org/pytz/"
+# source tar "https://files.pythonhosted.org/packages/source/p/pytz/pytz-2025.2.tar.gz"
+# ---
+
+cd pytz-2025.2
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist pytz

@@ -1,0 +1,11 @@
+# name "python-sphinxcontrib-qthelp"
+# version "2.0.0"
+# description "sphinx extension which outputs QtHelp document"
+# url "https://github.com/sphinx-doc/sphinxcontrib-qthelp/"
+# source tar "https://files.pythonhosted.org/packages/source/s/sphinxcontrib-qthelp/sphinxcontrib_qthelp-2.0.0.tar.gz"
+# ---
+
+cd sphinxcontrib_qthelp-2.0.0
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist sphinxcontrib-qthelp

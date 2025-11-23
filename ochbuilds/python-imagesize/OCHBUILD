@@ -1,0 +1,11 @@
+# name "python-imagesize"
+# version "1.4.1"
+# description "analyzes JPEG/JPEG 2000/PNG/GIF/TIFF/SVG/Netpbm/WebP image headers and returns image size or DPI"
+# url "https://github.com/shibukawa/imagesize_py"
+# source tar "https://files.pythonhosted.org/packages/source/B/Babel/babel-2.17.0.tar.gz"
+# ---
+
+cd imagesize-1.4.1
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist imagesize

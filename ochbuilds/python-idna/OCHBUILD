@@ -1,0 +1,11 @@
+# name "python-idna"
+# version "3.4.10"
+# description "Internationalized Domain Names for Python (IDNA 2008 and UTS #46)"
+# url "https://github.com/kjd/idna"
+# source tar "https://files.pythonhosted.org/packages/source/i/idna/idna-3.10.tar.gz"
+# ---
+
+cd idna-3.10
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist idna

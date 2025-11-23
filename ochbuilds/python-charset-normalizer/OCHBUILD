@@ -1,0 +1,12 @@
+# name "python-charset-normalizer"
+# version "3.4.3"
+# description "helps you read text from unknown charset encoding"
+# url "https://charset-normalizer.readthedocs.io/en/latest/"
+# source tar "https://files.pythonhosted.org/packages/source/c/charset-normalizer/charset_normalizer-3.4.3.tar.gz"
+# runtime "python-setuptools-scm"
+# ---
+
+cd charset_normalizer-3.4.3
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist charset-normalizer

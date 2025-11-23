@@ -1,0 +1,18 @@
+# name "libuv"
+# version "1.51.0"
+# description "Asynchronous I/O made simple"
+# url "https://libuv.org/"
+# source tar "https://dist.libuv.org/dist/v1.51.0/libuv-v1.51.0.tar.gz"
+# build "pyhton-sphinx"
+# ---
+
+cd libuv-v1.51.0
+
+sh autogen.sh
+./configure --prefix=/usr --disable-static
+make
+
+make man -C docs
+make install
+
+install -Dm644 docs/build/man/libuv.1 "$DESTDIR/usr/share/man/man1"

@@ -1,0 +1,14 @@
+# name "python-urllib3"
+# version "2.5.0"
+# description "user-friendly HTTP client library for Python"
+# url "https://github.com/urllib3/urllib3"
+# source tar "https://files.pythonhosted.org/packages/source/u/urllib3/urllib3-2.5.0.tar.gz"
+# runtime "hatch_vcs"
+# ---
+
+# FIXME
+
+cd urllib3-2.5.0
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist urllib3

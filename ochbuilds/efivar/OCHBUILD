@@ -5,8 +5,7 @@
 # source tar "https://github.com/rhboot/efivar/archive/39/efivar-39.tar.gz"
 # ---
 
-# FIXME: https://www.linuxfromscratch.org/blfs/view/12.4/postlfs/efivar.html
-# add optional dependencies
+# NOTE: man page is not built since mandoc is missing
 
 cd efivar-39
 

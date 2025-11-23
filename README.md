@@ -1,4 +1,4 @@
-# OCH - the OOS Package Manager
+# OCH - the OPPHOLD Package Manager
 
 /ɔkː/
 
@@ -17,6 +17,8 @@ https://lfs.it-privat.dk/lfs/view/stable/chapter08/cleanup.html
 ## static library warning
 
 https://www.linuxfromscratch.org/blfs/view/12.4/introduction/libraries.html
+
+MAKE-CA is missing!! (check curl and python-requests package)
 
 ## missing packages
 

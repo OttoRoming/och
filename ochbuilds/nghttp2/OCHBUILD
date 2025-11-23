@@ -1,0 +1,17 @@
+# name "nghttp2"
+# version "1.66.0"
+# description "implementation of HTTP/2 and its header compression algorithm HPACK in C"
+# url "https://www.nghttp2.org/"
+# source tar "https://github.com/nghttp2/nghttp2/releases/download/v1.66.0/nghttp2-1.66.0.tar.xz"
+# runtime "libxml2"
+# ---
+
+cd nghttp2-1.66.0
+
+./configure --prefix=/usr     \
+            --disable-static  \
+            --enable-lib-only \
+            --docdir=/usr/share/doc/nghttp2-1.66.0 &&
+
+make
+make install

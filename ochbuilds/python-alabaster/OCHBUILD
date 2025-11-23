@@ -1,0 +1,11 @@
+# name "python-alabaster"
+# version "1.0.0"
+# description "a visually (c)lean, responsive, configurable theme for the Sphinx documentation system"
+# url "https://alabaster.readthedocs.io/en/latest/"
+# source tar "https://files.pythonhosted.org/packages/source/a/alabaster/alabaster-1.0.0.tar.gz"
+# ---
+
+cd alabaster-1.0.0
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist alabaster

@@ -3,15 +3,16 @@
 # description "parse command-line options"
 # url "https://github.com/rpm-software-management/popt"
 # source tar "http://ftp.rpm.org/popt/releases/popt-1.x/popt-1.19.tar.gz"
+# build "doxygen"
 # ---
-
-# FIXME: https://www.linuxfromscratch.org/blfs/view/12.4/general/popt.html
-# add optional dependencies
 
 cd popt-1.19
 
 ./configure --prefix=/usr --disable-static
 make
+
+sed -i 's@\./@src/@' Doxyfile &&
+doxygen
 
 make install
 

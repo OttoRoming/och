@@ -1,0 +1,12 @@
+# name "python-gi-docgen"
+# version "2025.4"
+# description "A tool to create Sphinx documentation for GI modules using Python introspection"
+# url "https://github.com/pygobject/pgi-docgen"
+# source tar "https://files.pythonhosted.org/packages/source/g/gi-docgen/gi_docgen-2025.4.tar.gz"
+# runtime "python-markdown" "python-pygments" "python-typogrify"
+# ---
+
+cd gi_docgen-2025-4
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist gi-docgen

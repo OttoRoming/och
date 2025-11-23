@@ -1,0 +1,12 @@
+# name "python-sphinx"
+# version "8.2.3"
+# description "makes it easy to create intelligent and beautiful documentation"
+# url "https://github.com/sphinx-doc/sphinx"
+# source tar "https://files.pythonhosted.org/packages/source/d/docutils/docutcils-0.21.2.tar.gz"
+# runtime "python-alabaster" "python-babel" "python-docutils" "python-imagesize" "python-pygments" "python-requests" "python-roman-numerals-py" "python-snowballstemmer-3.0.1" "python-sphinxcontrib-applehelp" "python-sphinxcontrib-devhelp" "python-sphinxcontrib-htmlhelp" "python-sphinxcontrib-jsmath" "pyhton-sphinxcontrib-qthelp" "python-sphinxcontrib-serializinghtml"
+# ---
+
+cd sphinx-0.21.2
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist sphinx

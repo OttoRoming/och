@@ -1,0 +1,16 @@
+# name "icu"
+# version "77.1"
+# description "widely used set of C/C++ libraries providing Unicode and Globalization support for software applications"
+# url "https://icu.unicode.org/"
+# source tar "https://github.com/unicode-org/icu/releases/download/release-77-1/icu4c-77_1-src.tgz"
+# ---
+
+# NOTE: doxygen is missing, so docs are not built
+
+cd icu4c-77_1-src
+cd source
+
+./configure --prefix=/usr
+make
+
+make install

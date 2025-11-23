@@ -1,0 +1,12 @@
+# name "libtasn"
+# version "4.20.0"
+# description "the ASN.1 library used by GnuTLS, p11-kit and some other packages"
+# url "https://www.gnu.org/software/libtasn1/"
+# source tar "https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.20.0.tar.gz"
+# build "gtk-doc"
+# ---
+
+./configure --prefix=/usr --disable-static --enable-gtk-doc
+make
+
+make install

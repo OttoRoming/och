@@ -1,0 +1,21 @@
+# name "xmlto"
+# version "0.0.29"
+# description "a simple shell script for converting XML files to various formats"
+# url "https://pagure.io/xmlto/"
+# source tar "https://pagure.io/xmlto/archive/0.0.29/xmlto-0.0.29.tar.gz"
+# build "docbook-xml" "docbook-xsl-nons"
+# runtime "libxslt"
+# ---
+
+cd xmlto-0.0.29
+
+autoreconf -fiv
+
+# This environment variable fixes a bug causing xmlto to think that links command is the same as elinks.
+# Setting this variable does not cause problems if Links-2.30 is not installed,
+# unless you have ELinks installed, and you wish to use it for text backend post-processing.
+# If you do wish to ELinks, you should remove this environment variable.
+LINKS="/usr/bin/links" ./configure --prefix=/usr
+make
+
+make install

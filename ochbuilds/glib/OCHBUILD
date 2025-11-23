@@ -1,0 +1,39 @@
+# name "glib"
+# version "2.84.4"
+# description "general-purpose, portable utility library, which provides many useful data types, macros, type conversions, string utilities, file utilities, a mainloop abstraction, and so on"
+# url "https://docs.gtk.org/glib/"
+# source tar "https://download.gnome.org/sources/glib/2.84/glib-2.84.4.tar.xz"
+# source get "https://download.gnome.org/sources/gobject-introspection/1.84/gobject-introspection-1.84.0.tar.xz"
+# build "python-docutils" "libxslt" "docbook-xml" "docbook-xsl-nons" "python-gi-docgen"
+# runtime "pcre2"
+# ---
+
+cd glib-2.84.4
+
+mkdir build
+cd    build
+
+meson setup ..                  \
+      --prefix=/usr             \
+      --buildtype=release       \
+      -D introspection=disabled \
+      -D glib_debug=disabled    \
+      -D man-pages=enabled      \
+      -D sysprof=disabled
+
+ninja
+ninja install
+
+
+tar xf ../../gobject-introspection-1.84.0.tar.xz &&
+
+meson setup gobject-introspection-1.84.0 gi-build \
+            --prefix=/usr --buildtype=release     &&
+ninja -C gi-build
+
+
+sed "/docs_dir =/s|$| / 'glib-' + meson.project_version()|" \
+    -i ../docs/reference/meson.build
+meson configure -D documentation=true
+ninja
+ninja install

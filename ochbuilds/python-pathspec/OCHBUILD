@@ -1,0 +1,11 @@
+# name "python-pathspec"
+# version "0.12.1"
+# description "Utility library for gitignore style pattern matching of file paths"
+# url "https://github.com/cpburnz/python-pathspec"
+# source tar "https://files.pythonhosted.org/packages/source/p/pathspec/pathspec-0.12.1.tar.gz"
+# ---
+
+cd editables-0.5
+
+pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps "$PWD"
+pip3 install --root="$DESTDIR" --no-index --find-links dist pathspec

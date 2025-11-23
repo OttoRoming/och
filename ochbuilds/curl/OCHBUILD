@@ -1,0 +1,25 @@
+# name "curl"
+# version "8.15.0"
+# description "used in command lines or scripts to transfer data"
+# url "https://curl.se/"
+# source tar "https://curl.se/download/curl-8.15.0.tar.xz"
+# runtime "libpsl ca"
+# ---
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --with-openssl   \
+            --with-ca-path=/etc/ssl/certs
+
+make
+
+make install
+
+rm -rf docs/examples/.deps
+
+find docs \( -name Makefile\* -o  \
+             -name \*.1       -o  \
+             -name \*.3       -o  \
+             -name CMakeLists.txt \) -delete
+
+cp -v -R docs -T /usr/share/doc/curl-8.15.0

@@ -1,0 +1,17 @@
+# name "gtk-doc"
+# version "1.34.0"
+# description "is used to document C code"
+# url "https://gitlab.gnome.org/GNOME/gtk-doc"
+# source tar "https://download.gnome.org/sources/gtk-doc/1.34/gtk-doc-1.34.0.tar.xz"
+# runtime "docbook-xml" "docbook-xsl-nons" "glib" "itstool" "libxslt" "python-pygments"
+# ---
+
+cd gtk-doc-1.34.0
+
+mkdir -p build
+cd       build
+
+meson setup --prefix=/usr --buildtype=release ..
+ninja
+
+ninja install

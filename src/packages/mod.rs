@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::ffi::OsString;
+mod bash;
 mod m4;
 
 struct Configure {
@@ -38,6 +39,7 @@ struct Package {
     version: String,
     dependencies: Box<Vec<Package>>,
     make_dependencies: Box<Vec<Package>>,
+    self_dependent: bool,
     build: Option<Build>,
     check: Option<Check>,
 }
@@ -49,6 +51,7 @@ impl Package {
             version: version.to_string(),
             dependencies: Box::new(Vec::new()),
             make_dependencies: Box::new(Vec::new()),
+            self_dependent: false,
             build: None,
             check: None,
         }
@@ -61,6 +64,11 @@ impl Package {
 
     pub fn make_dependencies<T: IntoIterator<Item = Package>>(mut self, iter: T) -> Self {
         self.make_dependencies.extend(iter);
+        self
+    }
+
+    pub fn self_dependant(mut self) -> Self {
+        self.self_dependent = true;
         self
     }
 

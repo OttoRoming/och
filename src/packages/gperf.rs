@@ -1,20 +1,21 @@
 use super::*;
 
 pub fn package() -> Package {
-    Package::new("m4", "1.4.21")
+    Package::new("gperf", "3.3")
         .dependencies([
-            bash::package(),
+            gcc::package(),
             glibc::package(),
         ])
         .make_dependencies([
+            bash::package(),
             binutils::package(),
             coreutils::package(),
-            gcc::package(),
-            grep::package(),
             make::package(),
-            sed::package(),
-            texinfo::package(),
         ])
-        .build(Build::Configure(Configure::new().var("prefix", "/usr")))
+        .build(Build::Configure(
+            Configure::new()
+                .var("prefix", "/usr")
+                .var("docdir", "/usr/share/doc/gperf-3.3"),
+        ))
         .check(Check::Make)
 }

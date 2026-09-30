@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn package() -> Package {
-    Package::new("m4", "1.4.21")
+    Package::new("gzip", "1.14")
         .dependencies([
             bash::package(),
             glibc::package(),
@@ -15,6 +15,9 @@ pub fn package() -> Package {
             sed::package(),
             texinfo::package(),
         ])
-        .build(Build::Configure(Configure::new().var("prefix", "/usr")))
+        .build(Build::Configure(
+            Configure::new()
+                .var("prefix", "/usr"),
+        ))
         .check(Check::Make)
 }

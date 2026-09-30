@@ -1,20 +1,26 @@
 use super::*;
 
 pub fn package() -> Package {
-    Package::new("m4", "1.4.21")
+    Package::new("less", "704")
         .dependencies([
-            bash::package(),
             glibc::package(),
+            ncurses::package(),
         ])
         .make_dependencies([
+            bash::package(),
             binutils::package(),
             coreutils::package(),
+            diffutils::package(),
             gcc::package(),
             grep::package(),
             make::package(),
+            pcre2::package(),
             sed::package(),
-            texinfo::package(),
         ])
-        .build(Build::Configure(Configure::new().var("prefix", "/usr")))
+        .build(Build::Configure(
+            Configure::new()
+                .var("prefix", "/usr")
+                .var("sysconfdir", "/etc"),
+        ))
         .check(Check::Make)
 }

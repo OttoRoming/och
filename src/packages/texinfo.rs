@@ -1,20 +1,25 @@
 use super::*;
 
 pub fn package() -> Package {
-    Package::new("m4", "1.4.21")
+    Package::new("texinfo", "7.3")
         .dependencies([
-            bash::package(),
             glibc::package(),
+            ncurses::package(),
         ])
         .make_dependencies([
+            bash::package(),
             binutils::package(),
             coreutils::package(),
             gcc::package(),
+            gettext::package(),
             grep::package(),
             make::package(),
+            patch::package(),
             sed::package(),
-            texinfo::package(),
         ])
-        .build(Build::Configure(Configure::new().var("prefix", "/usr")))
+        .build(Build::Configure(
+            Configure::new()
+                .var("prefix", "/usr"),
+        ))
         .check(Check::Make)
 }

@@ -1,7 +1,32 @@
 use std::collections::HashMap;
 use std::ffi::OsString;
+mod acl;
+mod attr;
+mod autoconf;
+mod automake;
 mod bash;
+mod bison;
+mod diffutils;
+mod expat;
+mod file;
+mod findutils;
+mod gdbm;
+mod gperf;
+mod gzip;
+mod less;
+mod libffi;
+mod libpipeline;
 mod m4;
+mod make;
+mod man_db;
+mod mpdecimal;
+mod patch;
+mod pcre2;
+mod procps_ng;
+mod psmisc;
+mod texinfo;
+mod util_linux;
+mod xz;
 
 struct Configure {
     options: HashMap<OsString, Option<OsString>>,

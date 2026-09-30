@@ -2,6 +2,10 @@ use super::*;
 
 pub fn package() -> Package {
     Package::new("man-db", "2.13.1")
+        .http_src(
+            "https://download.savannah.gnu.org/releases/man-db/man-db-2.13.1.tar.xz",
+            hex!("8afebb6f7eb6bb8542929458841f5c7e6f240e30c86358c1fbcefbea076c87d9"),
+        )
         .dependencies([
             bash::package(),
             gdbm::package(),

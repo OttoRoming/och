@@ -2,6 +2,10 @@ use super::*;
 
 pub fn package() -> Package {
     Package::new("file", "5.48")
+        .http_src(
+            "https://astron.com/pub/file/file-5.48.tar.gz",
+            hex!("ed14656883b23a364b4057c05595d93252da9bc473d30106519519d0da141283"),
+        )
         .dependencies([
             glibc::package(),
             bzip2::package(),

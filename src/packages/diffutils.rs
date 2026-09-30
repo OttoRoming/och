@@ -2,6 +2,10 @@ use super::*;
 
 pub fn package() -> Package {
     Package::new("diffutils", "3.12")
+        .http_src(
+            "https://ftpmirror.gnu.org/diffutils/diffutils-3.12.tar.xz",
+            hex!("7c8b7f9fc8609141fdea9cece85249d308624391ff61dedaf528fcb337727dfd"),
+        )
         .dependencies([glibc::package()])
         .make_dependencies([
             bash::package(),

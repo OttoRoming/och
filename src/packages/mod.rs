@@ -1,5 +1,7 @@
+use hex_literal::hex;
 use std::collections::HashMap;
 use std::ffi::OsString;
+use url::Url;
 mod acl;
 mod attr;
 mod autoconf;
@@ -59,9 +61,14 @@ enum Check {
     Make, // only for packages with simple `make check`
 }
 
+enum Source {
+    Http { url: Url, hash_sha256: [u8; 32] },
+}
+
 struct Package {
     name: String,
     version: String,
+    sources: Vec<Source>,
     dependencies: Box<Vec<Package>>,
     make_dependencies: Box<Vec<Package>>,
     self_dependent: bool,
@@ -74,12 +81,21 @@ impl Package {
         Self {
             name: name.to_string(),
             version: version.to_string(),
+            sources: Vec::new(),
             dependencies: Box::new(Vec::new()),
             make_dependencies: Box::new(Vec::new()),
             self_dependent: false,
             build: None,
             check: None,
         }
+    }
+
+    pub fn http_src(mut self, url: &str, hash_sha256: [u8; 32]) -> Self {
+        self.sources.push(Source::Http {
+            url: Url::parse(url).unwrap(),
+            hash_sha256,
+        });
+        self
     }
 
     pub fn dependencies<T: IntoIterator<Item = Package>>(mut self, iter: T) -> Self {

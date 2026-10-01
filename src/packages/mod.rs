@@ -72,7 +72,7 @@ impl Configure {
 /// meson setup \
 ///     --prefix=/usr \
 ///     --buildtype=release \
-///     -D [OPTION]=[VALUE]... \
+///     -D [VAR]=[VALUE]... \
 ///     ..
 ///
 /// ninja
@@ -82,6 +82,20 @@ impl Configure {
 /// ```
 struct Meson {
     options: HashMap<OsString, OsString>,
+}
+
+impl Meson {
+    pub fn new() -> Self {
+        Self {
+            options: HashMap::new(),
+        }
+    }
+
+    pub fn var(mut self, var: &str, value: &str) -> Self {
+        self.options
+            .insert(OsString::from(var), OsString::from(value));
+        self
+    }
 }
 
 enum Build {

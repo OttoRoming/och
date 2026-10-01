@@ -30,6 +30,16 @@ mod texinfo;
 mod util_linux;
 mod xz;
 
+/// # For traditional UNIX packages build with ./configure
+/// equivalent to:
+/// ```bash
+/// ./configure \
+///     --[OPTION]... \
+///     --[VAR]=[VALUE]...
+///
+/// make
+/// make DESTDIR=[DEST] install
+/// ```
 struct Configure {
     options: HashMap<OsString, Option<OsString>>,
 }
@@ -53,12 +63,49 @@ impl Configure {
     }
 }
 
+/// # For packages built with the Meson build system
+/// equivalent to:
+/// ```bash
+/// mkdir build
+/// cd build
+///
+/// meson setup \
+///     --prefix=/usr \
+///     --buildtype=release \
+///     -D [OPTION]=[VALUE]... \
+///     ..
+///
+/// ninja
+/// ninja install
+///
+/// cd ..
+/// ```
+struct Meson {
+    options: HashMap<OsString, OsString>,
+}
+
 enum Build {
     Configure(Configure),
 }
 
 enum Check {
-    Make, // only for packages with simple `make check`
+    /// # For packages checked through a Makefile
+    /// equivalent to:
+    /// ```bash
+    /// make check
+    /// ```
+    Make,
+
+    /// # For Meson packages checked with Ninja
+    /// equivalent to:
+    /// ```bash
+    /// cd build
+    ///
+    /// ninja test
+    ///
+    /// cd ..
+    /// ```
+    Meson,
 }
 
 enum Source {

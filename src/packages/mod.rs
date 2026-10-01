@@ -133,6 +133,7 @@ struct Package {
     dependencies: Box<Vec<Package>>,
     make_dependencies: Box<Vec<Package>>,
     self_dependent: bool,
+    patches: Vec<&'static str>,
     build: Option<Build>,
     check: Option<Check>,
 }
@@ -146,6 +147,7 @@ impl Package {
             dependencies: Box::new(Vec::new()),
             make_dependencies: Box::new(Vec::new()),
             self_dependent: false,
+            patches: Vec::new(),
             build: None,
             check: None,
         }
@@ -166,6 +168,11 @@ impl Package {
 
     pub fn make_dependencies<T: IntoIterator<Item = Package>>(mut self, iter: T) -> Self {
         self.make_dependencies.extend(iter);
+        self
+    }
+
+    pub fn patches<T: IntoIterator<Item = &'static str>>(mut self, iter: T) -> Self {
+        self.patches.extend(iter);
         self
     }
 

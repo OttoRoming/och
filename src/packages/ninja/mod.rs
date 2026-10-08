@@ -7,13 +7,13 @@ pub fn package() -> Package {
             hex!("974d6b2f4eeefa25625d34da3cb36bdcebe7fbce40f4c16ac0835fd1c0cbae17"),
         )
         .dependencies([
-            gcc::package(),
-            glibc::package(),
+            gcc::package,
+            glibc::package,
         ])
         .make_dependencies([
-            binutils::package(),
-            coreutils::package(),
-            python::package(),
+            binutils::package,
+            coreutils::package,
+            python::package,
         ])
         .build(Build::Script(include_str!("build.sh")))
 }

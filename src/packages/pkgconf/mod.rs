@@ -10,13 +10,13 @@ pub fn package() -> Package {
             "https://distfiles.ariadne.space/pkgconf/pkgconf-3.0.5.tar.xz",
             hex!("3acd3a8a3cce65a8d620321855d92fb602e026cbe8e13ee36bdec58483b59ace"),
         )
-        .dependencies([glibc::package()])
+        .dependencies([glibc::package])
         .make_dependencies([
-            binutils::package(),
-            gcc::package(),
-            meson::package(),
-            ninja::package(),
-            python::package(),
+            binutils::package,
+            gcc::package,
+            meson::package,
+            ninja::package,
+            python::package,
         ])
         .build(Build::Script(include_str!("build.sh")))
         .check(Check::new(include_str!("check.sh")))

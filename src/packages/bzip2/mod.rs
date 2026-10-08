@@ -10,15 +10,15 @@ pub fn package() -> Package {
             "https://www.linuxfromscratch.org/patches/lfs/13.1/bzip2-1.0.8-install_docs-1.patch",
             hex!("35e3bbd9642af51fef2a8a83afba040d272da42d7e3a251d8e43255a7b496702"),
         )
-        .dependencies([glibc::package()])
+        .dependencies([glibc::package])
         .make_dependencies([
-            bash::package(),
-            binutils::package(),
-            coreutils::package(),
-            diffutils::package(),
-            gcc::package(),
-            make::package(),
-            patch::package(),
+            bash::package,
+            binutils::package,
+            coreutils::package,
+            diffutils::package,
+            gcc::package,
+            make::package,
+            patch::package,
         ])
         .build(Build::Script(include_str!("build.sh")))
 }

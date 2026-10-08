@@ -7,21 +7,21 @@ pub fn package() -> Package {
             hex!("57b3cf4f77555992881e5ba2a09a63b05aa2c56342a60ed4305b5f45938390b5"),
         )
         .dependencies([
-            gcc::package(),
-            glibc::package(),
-            ncurses::package(),
-            readline::package(),
+            gcc::package,
+            glibc::package,
+            ncurses::package,
+            readline::package,
         ])
         .make_dependencies([
-            bash::package(),
-            binutils::package(),
-            coreutils::package(),
-            grep::package(),
-            make::package(),
-            patch::package(),
-            sed::package(),
-            texinfo::package(),
-            zlib::package(),
+            bash::package,
+            binutils::package,
+            coreutils::package,
+            grep::package,
+            make::package,
+            patch::package,
+            sed::package,
+            texinfo::package,
+            zlib::package,
         ])
         .build(Build::Script(include_str!("build.sh")))
         .check(Check::new(include_str!("check.sh")))

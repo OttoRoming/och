@@ -11,20 +11,20 @@ pub fn package() -> Package {
             hex!("8be28dcb11420624a500f2ea4fe975f771174bffee50e54ec8cd295a2dec104e"),
         )
         .dependencies([
-            bash::package(),
-            coreutils::package(),
-            glibc::package(),
+            bash::package,
+            coreutils::package,
+            glibc::package,
         ])
         .make_dependencies([
-            binutils::package(),
-            bison::package(),
-            flex::package(),
-            gcc::package(),
-            gettext::package(),
-            gzip::package(),
-            make::package(),
-            patch::package(),
-            sed::package(),
+            binutils::package,
+            bison::package,
+            flex::package,
+            gcc::package,
+            gettext::package,
+            gzip::package,
+            make::package,
+            patch::package,
+            sed::package,
         ])
         .build(Build::Script(include_str!("build.sh")))
         .check(Check::new(include_str!("check.sh")))

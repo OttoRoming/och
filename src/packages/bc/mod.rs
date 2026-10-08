@@ -7,17 +7,17 @@ pub fn package() -> Package {
             hex!("91eb74caed0ee6655b669711a4f350c25579778694df248e28363318e03c7fc4"),
         )
         .dependencies([
-            glibc::package(),
-            ncurses::package(),
-            readline::package(),
+            glibc::package,
+            ncurses::package,
+            readline::package,
         ])
         .make_dependencies([
-            bash::package(),
-            binutils::package(),
-            coreutils::package(),
-            gcc::package(),
-            grep::package(),
-            make::package(),
+            bash::package,
+            binutils::package,
+            coreutils::package,
+            gcc::package,
+            grep::package,
+            make::package,
         ])
         .build(Build::Script(include_str!("build.sh")))
         .check(Check::new(include_str!("check.sh")))

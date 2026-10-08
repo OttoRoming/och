@@ -1,7 +1,12 @@
 use hex_literal::hex;
-use std::collections::HashMap;
-use std::ffi::OsString;
 use url::Url;
+
+mod build;
+mod check;
+
+pub use build::Build;
+pub use check::Check;
+
 mod acl;
 mod attr;
 mod autoconf;
@@ -29,84 +34,6 @@ mod psmisc;
 mod texinfo;
 mod util_linux;
 mod xz;
-
-/// # For traditional UNIX packages build with ./configure
-/// equivalent to:
-/// ```bash
-/// ./configure \
-///     --[OPTION]... \
-///     --[VAR]=[VALUE]...
-///
-/// make
-/// make DESTDIR=[DEST] install
-/// ```
-struct Configure {
-    options: HashMap<OsString, Option<OsString>>,
-}
-
-impl Configure {
-    pub fn new() -> Self {
-        Self {
-            options: HashMap::new(),
-        }
-    }
-
-    pub fn opt(mut self, option: &str) -> Self {
-        self.options.insert(OsString::from(option), None);
-        self
-    }
-
-    pub fn var(mut self, var: &str, value: &str) -> Self {
-        self.options
-            .insert(OsString::from(var), Some(OsString::from(value)));
-        self
-    }
-}
-
-/// # For packages built with the Meson build system
-/// equivalent to:
-/// ```bash
-/// mkdir build
-/// cd build
-///
-/// meson setup \
-///     --prefix=/usr \
-///     --buildtype=release \
-///     -D [OPTION]=[VALUE]... \
-///     ..
-///
-/// ninja
-/// ninja install
-///
-/// cd ..
-/// ```
-struct Meson {
-    options: HashMap<OsString, OsString>,
-}
-
-enum Build {
-    Configure(Configure),
-}
-
-enum Check {
-    /// # For packages checked through a Makefile
-    /// equivalent to:
-    /// ```bash
-    /// make check
-    /// ```
-    Make,
-
-    /// # For Meson packages checked with Ninja
-    /// equivalent to:
-    /// ```bash
-    /// cd build
-    ///
-    /// ninja test
-    ///
-    /// cd ..
-    /// ```
-    Meson,
-}
 
 enum Source {
     Http { url: Url, hash_sha256: [u8; 32] },

@@ -14,9 +14,10 @@ make install
 ```
 
 — optionally with a simple `make check` in between — are implemented as
-modules under `src/packages/`. Everything else is listed below, grouped by
-whatever stops it from being described with the current `Package` builder, so
-that the missing pieces are easy to spot later.
+modules under `src/packages/`. Each module keeps its metadata in `mod.rs` and
+its recipes in a sibling `build.sh` and `check.sh`, which are embedded with
+`include_str!`. Everything else is listed below, grouped by whatever still
+needs to be added, so that the missing pieces are easy to spot later.
 
 Recipes live in `lfs/13.1/chapter08/`; the dependency lists come from
 `lfs/13.1/appendices/dependencies.html`, where
@@ -29,33 +30,33 @@ Recipes live in `lfs/13.1/chapter08/`; the dependency lists come from
 
 | Package | Version | Module |
 | --- | --- | --- |
-| Acl | 2.4.0 | [acl.rs](src/packages/acl.rs) |
-| Attr | 2.6.0 | [attr.rs](src/packages/attr.rs) |
-| Autoconf | 2.73 | [autoconf.rs](src/packages/autoconf.rs) |
-| Automake | 1.18.1 | [automake.rs](src/packages/automake.rs) |
-| Bash | 5.3 | [bash.rs](src/packages/bash.rs) |
-| Bison | 3.8.2 | [bison.rs](src/packages/bison.rs) |
-| Diffutils | 3.12 | [diffutils.rs](src/packages/diffutils.rs) |
-| Expat | 2.8.3 | [expat.rs](src/packages/expat.rs) |
-| File | 5.48 | [file.rs](src/packages/file.rs) |
-| Findutils | 4.11.0 | [findutils.rs](src/packages/findutils.rs) |
-| GDBM | 1.26 | [gdbm.rs](src/packages/gdbm.rs) |
-| Gperf | 3.3 | [gperf.rs](src/packages/gperf.rs) |
-| Gzip | 1.14 | [gzip.rs](src/packages/gzip.rs) |
-| Less | 704 | [less.rs](src/packages/less.rs) |
-| Libffi | 3.8.0 | [libffi.rs](src/packages/libffi.rs) |
-| Libpipeline | 1.5.8 | [libpipeline.rs](src/packages/libpipeline.rs) |
-| M4 | 1.4.21 | [m4.rs](src/packages/m4.rs) |
-| Make | 4.4.1 | [make.rs](src/packages/make.rs) |
-| Man-DB | 2.13.1 | [man_db.rs](src/packages/man_db.rs) |
-| mpdecimal | 4.0.1 | [mpdecimal.rs](src/packages/mpdecimal.rs) |
-| Patch | 2.8 | [patch.rs](src/packages/patch.rs) |
-| Pcre2 | 10.47 | [pcre2.rs](src/packages/pcre2.rs) |
-| Procps-ng | 4.0.7 | [procps_ng.rs](src/packages/procps_ng.rs) |
-| Psmisc | 23.7 | [psmisc.rs](src/packages/psmisc.rs) |
-| Texinfo | 7.3 | [texinfo.rs](src/packages/texinfo.rs) |
-| Util-linux | 2.42.2 | [util_linux.rs](src/packages/util_linux.rs) |
-| Xz | 5.8.3 | [xz.rs](src/packages/xz.rs) |
+| Acl | 2.4.0 | [acl](src/packages/acl/mod.rs) |
+| Attr | 2.6.0 | [attr](src/packages/attr/mod.rs) |
+| Autoconf | 2.73 | [autoconf](src/packages/autoconf/mod.rs) |
+| Automake | 1.18.1 | [automake](src/packages/automake/mod.rs) |
+| Bash | 5.3 | [bash](src/packages/bash/mod.rs) |
+| Bison | 3.8.2 | [bison](src/packages/bison/mod.rs) |
+| Diffutils | 3.12 | [diffutils](src/packages/diffutils/mod.rs) |
+| Expat | 2.8.3 | [expat](src/packages/expat/mod.rs) |
+| File | 5.48 | [file](src/packages/file/mod.rs) |
+| Findutils | 4.11.0 | [findutils](src/packages/findutils/mod.rs) |
+| GDBM | 1.26 | [gdbm](src/packages/gdbm/mod.rs) |
+| Gperf | 3.3 | [gperf](src/packages/gperf/mod.rs) |
+| Gzip | 1.14 | [gzip](src/packages/gzip/mod.rs) |
+| Less | 704 | [less](src/packages/less/mod.rs) |
+| Libffi | 3.8.0 | [libffi](src/packages/libffi/mod.rs) |
+| Libpipeline | 1.5.8 | [libpipeline](src/packages/libpipeline/mod.rs) |
+| M4 | 1.4.21 | [m4](src/packages/m4/mod.rs) |
+| Make | 4.4.1 | [make](src/packages/make/mod.rs) |
+| Man-DB | 2.13.1 | [man_db](src/packages/man_db/mod.rs) |
+| mpdecimal | 4.0.1 | [mpdecimal](src/packages/mpdecimal/mod.rs) |
+| Patch | 2.8 | [patch](src/packages/patch/mod.rs) |
+| Pcre2 | 10.47 | [pcre2](src/packages/pcre2/mod.rs) |
+| Procps-ng | 4.0.7 | [procps_ng](src/packages/procps_ng/mod.rs) |
+| Psmisc | 23.7 | [psmisc](src/packages/psmisc/mod.rs) |
+| Texinfo | 7.3 | [texinfo](src/packages/texinfo/mod.rs) |
+| Util-linux | 2.42.2 | [util_linux](src/packages/util_linux/mod.rs) |
+| Xz | 5.8.3 | [xz](src/packages/xz/mod.rs) |
 
 ## Not packaged (categorised for future work)
 

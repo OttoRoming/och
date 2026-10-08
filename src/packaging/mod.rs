@@ -1,105 +1,91 @@
-use std::{
-    convert, error, fmt,
-    io::{self, BufRead},
-    path::{Path, PathBuf},
-    process,
-};
+use std::io::{self, Read, Seek, SeekFrom, Write};
 
-use crate::{details::Details, tar_utils, terminal::Progress};
+use sha2::{Digest, Sha256};
+use tempfile::tempfile;
 
-#[derive(Debug)]
-pub enum Error {
-    Io(io::Error),
-    TarFailed,
-    OchBuildFailed(Option<i32>),
-}
+use crate::packages::{Package, Source};
 
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self {
-            &Self::TarFailed => {
-                write!(f, "Failed to archive package")
-            }
-            &Self::OchBuildFailed(code_option) => {
-                let code = match code_option {
-                    Some(v) => format!("{}", v),
-                    None => "unknown".to_string(),
-                };
-                write!(f, "OCHBUILD exited with statuscode {}", code)
-            }
-            &Self::Io(err) => {
-                write!(f, "io: {}", err)
+/// Build the provided package to a tarball
+pub fn package(pkg: Package) {
+    for source in pkg.iter_sources() {
+        match source {
+            Source::Http { url, hash_sha256 } => {
+                let body = ureq::get(url)
+                    .call()
+                    .unwrap_or_else(|error| panic!("Failed to fetch {url}: {error}"))
+                    .into_body()
+                    .into_reader();
+
+                // Stream the archive to an anonymous temporary file while
+                // hashing it. This keeps the whole tarball out of memory and
+                // lets us verify it before anything is unpacked.
+                let mut file = tempfile()
+                    .unwrap_or_else(|error| panic!("Failed to create temporary file: {error}"));
+
+                let hash = hash_while_writing(body, &mut file)
+                    .unwrap_or_else(|error| panic!("Failed to download {url}: {error}"));
+
+                assert_eq!(
+                    &hash, hash_sha256,
+                    "Hash mismatch for {}: expected {:x?}, got {:x?}",
+                    url, hash_sha256, hash
+                );
+
+                file.seek(SeekFrom::Start(0))
+                    .unwrap_or_else(|error| panic!("Failed to rewind {url}: {error}"));
+
+                unpack(&mut file).unwrap_or_else(|error| panic!("Failed to unpack {url}: {error}"));
             }
         }
     }
+    // pkg.iter_build_dependencies()
 }
 
-impl convert::From<io::Error> for Error {
-    fn from(value: io::Error) -> Self {
-        Self::Io(value)
-    }
+/// Streams `reader` into `writer`, returning the SHA256 of what was written.
+fn hash_while_writing(reader: impl Read, writer: &mut impl Write) -> io::Result<[u8; 32]> {
+    let mut reader = HashingReader::new(reader);
+
+    io::copy(&mut reader, writer)?;
+    writer.flush()?;
+
+    Ok(reader.finalize())
 }
 
-impl error::Error for Error {}
+/// A reader that hashes everything read through it.
+struct HashingReader<R> {
+    inner: R,
+    hasher: Sha256,
+}
 
-pub fn archive_package(
-    details: &Details,
-    source_dir: &Path,
-    destination_dir: &Path,
-) -> Result<PathBuf, Error> {
-    let mut package_archive_path = destination_dir.to_path_buf();
-    package_archive_path.push(format!("{}-{}.tar.lz", details.name, details.version));
-
-    // Create the tar.lz archive using the `tar` command
-    let mut process = std::process::Command::new("tar")
-        .arg("--owner=0")
-        .arg("--group=0")
-        .arg("--lzip")
-        .arg("--force-local")
-        .arg("--checkpoint")
-        .arg("--checkpoint-action=totals")
-        .arg("-cf")
-        .arg(package_archive_path.to_str().unwrap())
-        .arg("-C")
-        .arg(source_dir)
-        .arg(".")
-        .stdout(process::Stdio::piped())
-        .stderr(process::Stdio::piped())
-        .spawn()?;
-
-    let stderr = process.stderr.take().expect("stdout piped");
-    let reader = io::BufReader::new(stderr);
-
-    let mut progress = Progress::default();
-
-    progress.start()?;
-    for line_result in reader.lines() {
-        let line = line_result?;
-        if let Some(speed) = tar_utils::line_find_speed(&line) {
-            progress.add(0.1, speed)?;
+impl<R: Read> HashingReader<R> {
+    fn new(inner: R) -> Self {
+        Self {
+            inner,
+            hasher: Sha256::new(),
         }
     }
-    progress.finish()?;
 
-    if process.wait()?.success() {
-        Ok(package_archive_path)
-    } else {
-        Err(Error::TarFailed)
+    fn finalize(self) -> [u8; 32] {
+        self.hasher.finalize().into()
     }
 }
 
-/// Executes a OCHBUILD script
-pub fn run_ochbuild(ochbuild: &Path) -> Result<(), Error> {
-    let ochbuild_status = process::Command::new("bash")
-        .arg("-e")
-        .arg(ochbuild.to_str().unwrap())
-        .stdout(std::process::Stdio::inherit())
-        .stderr(std::process::Stdio::inherit())
-        .status()?;
+impl<R: Read> Read for HashingReader<R> {
+    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+        let read = self.inner.read(buffer)?;
 
-    if ochbuild_status.success() {
-        Ok(())
-    } else {
-        Err(Error::OchBuildFailed(ochbuild_status.code()))
+        self.hasher.update(&buffer[..read]);
+
+        Ok(read)
     }
+}
+
+/// Unpacks a gzip-compressed tarball into the current directory.
+fn unpack(reader: impl Read) -> io::Result<()> {
+    let decoder = flate2::read::GzDecoder::new(io::BufReader::new(reader));
+    let mut archive = tar::Archive::new(decoder);
+
+    archive.unpack(".")?;
+
+    Ok(())
 }

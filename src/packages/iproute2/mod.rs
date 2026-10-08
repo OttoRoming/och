@@ -21,5 +21,5 @@ pub fn package() -> Package {
             make::package(),
             pkgconf::package(),
         ])
-        .build(Build::new(include_str!("build.sh")))
+        .build(Build::Script(include_str!("build.sh")))
 }

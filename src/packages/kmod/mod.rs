@@ -26,5 +26,5 @@ pub fn package() -> Package {
             sed::package(),
             zstd::package(),
         ])
-        .build(Build::new(include_str!("build.sh")))
+        .build(Build::Script(include_str!("build.sh")))
 }

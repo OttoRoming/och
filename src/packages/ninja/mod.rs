@@ -14,5 +14,5 @@ pub fn package() -> Package {
             binutils::package(),
             coreutils::package(),
         ])
-        .build(Build::new(include_str!("build.sh")))
+        .build(Build::Script(include_str!("build.sh")))
 }

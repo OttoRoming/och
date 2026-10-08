@@ -7,5 +7,5 @@ pub fn package() -> Package {
             hex!("29270860664e324107537f32ea476a333ca52d71b59c74bc06ecc3b0fa9cf490"),
         )
         .make_dependencies([coreutils::package()])
-        .build(Build::new(include_str!("build.sh")))
+        .build(Build::Script(include_str!("build.sh")))
 }

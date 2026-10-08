@@ -29,6 +29,6 @@ pub fn package() -> Package {
             sed::package(),
             systemd::package(),
         ])
-        .build(Build::new(include_str!("build.sh")))
+        .build(Build::Script(include_str!("build.sh")))
         .check(Check::new(include_str!("check.sh")))
 }

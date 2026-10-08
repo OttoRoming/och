@@ -24,5 +24,5 @@ pub fn package() -> Package {
             ncurses::package(),
             texinfo::package(),
         ])
-        .build(Build::new(include_str!("build.sh")))
+        .build(Build::Script(include_str!("build.sh")))
 }

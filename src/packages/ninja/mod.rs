@@ -13,6 +13,7 @@ pub fn package() -> Package {
         .make_dependencies([
             binutils::package(),
             coreutils::package(),
+            python::package(),
         ])
         .build(Build::Script(include_str!("build.sh")))
 }

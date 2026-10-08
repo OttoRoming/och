@@ -1,28 +1,30 @@
 use super::*;
 
 pub fn package() -> Package {
-    Package::new("vim", "9.2.1025")
-        .http_src(
-            "https://github.com/vim/vim/archive/v9.2.1025/vim-9.2.1025.tar.gz",
-            hex!("cb0dbf701f8550bb54940304fa4d8b875e078db84967e5b36a0eb7ebe8a6d0cc"),
-        )
+    Package::new("python", "3.14.7")
         .dependencies([
-            acl::package(),
-            attr::package(),
+            bzip2::package(),
+            expat::package(),
+            gdbm::package(),
             glibc::package(),
+            libffi::package(),
+            libxcrypt::package(),
+            mpdecimal::package(),
             ncurses::package(),
-            python::package(),
-            tcl::package(),
+            openssl::package(),
+            zlib::package(),
         ])
         .make_dependencies([
             bash::package(),
             binutils::package(),
             coreutils::package(),
-            diffutils::package(),
             gcc::package(),
+            gettext::package(),
             grep::package(),
             make::package(),
+            pkgconf::package(),
             sed::package(),
+            util_linux::package(),
         ])
         .build(Build::Script(include_str!("build.sh")))
         .check(Check::new(include_str!("check.sh")))

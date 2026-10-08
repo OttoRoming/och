@@ -11,6 +11,7 @@ pub fn package() -> Package {
             binutils::package(),
             glibc::package(),
             mpc::package(),
+            python::package(),
         ])
         .make_dependencies([
             coreutils::package(),

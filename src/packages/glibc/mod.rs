@@ -31,6 +31,7 @@ pub fn package() -> Package {
             gzip::package(),
             make::package(),
             perl::package(),
+            python::package(),
             sed::package(),
             texinfo::package(),
         ])

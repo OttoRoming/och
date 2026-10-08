@@ -1,0 +1,31 @@
+name = "tcl"
+version = "8.6.18"
+
+dependencies = ["glibc", "zlib"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gcc",
+    "grep",
+    "make",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://downloads.sourceforge.net/tcl/tcl8.6.18-src.tar.gz"
+sha256 = "14f9af32b1767ff718477a8f974ad03c34341097e6b43f4ce54644ee974e268e"
+
+[[sources]]
+type = "http"
+url = "https://downloads.sourceforge.net/tcl/tcl8.6.18-html.tar.gz"
+sha256 = "bee2d83a19ce50624eeae951be29fe5f654b171357a6391123caf18107cec543"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

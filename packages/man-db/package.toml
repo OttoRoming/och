@@ -1,0 +1,38 @@
+name = "man-db"
+version = "2.13.1"
+
+dependencies = [
+    "bash",
+    "gdbm",
+    "groff",
+    "glibc",
+    "gzip",
+    "less",
+    "libpipeline",
+    "zlib",
+]
+make_dependencies = [
+    "binutils",
+    "bzip2",
+    "coreutils",
+    "flex",
+    "gcc",
+    "gettext",
+    "grep",
+    "make",
+    "pkgconf",
+    "sed",
+    "systemd",
+]
+
+[[sources]]
+type = "http"
+url = "https://download.savannah.gnu.org/releases/man-db/man-db-2.13.1.tar.xz"
+sha256 = "8afebb6f7eb6bb8542929458841f5c7e6f240e30c86358c1fbcefbea076c87d9"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

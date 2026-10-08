@@ -1,0 +1,29 @@
+name = "attr"
+version = "2.6.0"
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "gcc",
+    "gettext",
+    "grep",
+    "m4",
+    "make",
+    "perl",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://download.savannah.gnu.org/releases/attr/attr-2.6.0.tar.gz"
+sha256 = "d42fa374513180bb48cb11a46696f488240e5124ff1e6ad88b0abff706985612"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

@@ -1,0 +1,28 @@
+name = "groff"
+version = "1.24.1"
+
+dependencies = ["gcc", "glibc", "perl"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "bison",
+    "coreutils",
+    "gawk",
+    "grep",
+    "make",
+    "patch",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/groff/groff-1.24.1.tar.gz"
+sha256 = "74e2819795b6aff431aeac983d63a9c8968eeaba2a2eba7df8ba4c7b41e7cfd8"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

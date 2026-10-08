@@ -1,0 +1,25 @@
+name = "dejagnu"
+version = "1.6.3"
+
+dependencies = ["bash", "expect"]
+make_dependencies = [
+    "coreutils",
+    "diffutils",
+    "gcc",
+    "grep",
+    "make",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/dejagnu/dejagnu-1.6.3.tar.gz"
+sha256 = "87daefacd7958b4a69f88c6856dbd1634261963c414079d0c371f589cd66a2e3"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

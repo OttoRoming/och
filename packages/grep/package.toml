@@ -1,0 +1,31 @@
+name = "grep"
+version = "3.12"
+bootstrap = true
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gcc",
+    "gettext",
+    "grep",
+    "make",
+    "patch",
+    "pcre2",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/grep/grep-3.12.tar.xz"
+sha256 = "2649b27c0e90e632eadcd757be06c6e9a4f48d941de51e7c0f83ff76408a07b9"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

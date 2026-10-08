@@ -1,0 +1,29 @@
+name = "acl"
+version = "2.4.0"
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "gcc",
+    "gettext",
+    "grep",
+    "m4",
+    "make",
+    "perl",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://download.savannah.gnu.org/releases/acl/acl-2.4.0.tar.xz"
+sha256 = "e661131456d2708a01c614a0f400e11d7d1bfaeb6f3e74b75bb980b72f0161a3"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

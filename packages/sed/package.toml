@@ -1,0 +1,28 @@
+name = "sed"
+version = "4.10"
+bootstrap = true
+
+dependencies = ["acl", "attr", "glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "gcc",
+    "gettext",
+    "grep",
+    "make",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/sed/sed-4.10.tar.xz"
+sha256 = "b8e72182b2ec96a3574e2998c47b7aaa64cc20ce000d8e9ac313cc07cecf28c7"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

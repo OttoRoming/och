@@ -1,11 +1,29 @@
-/// The shell script that builds and installs a package.
+/// How a package is built and installed.
 ///
-/// The script is run from the root of the extracted source tree with the
+/// A build script is run from the root of the extracted source tree with the
 /// staging directory exported as `DESTDIR`, and is expected to configure,
-/// compile and install the package. It is embedded at compile time with
-/// `include_str!`, so recipes live next to the package that defines them.
-#[derive(Debug, Clone, Copy)]
+/// compile and install the package. Python modules are installed with `pip3`
+/// instead, and are named by their import name.
+#[derive(Debug, Clone)]
 pub enum Build {
-    Python(&'static str),
-    Script(&'static str),
+    Script(String),
+    Python(String),
+}
+
+impl Build {
+    /// The shell script to execute, for [`Build::Script`].
+    pub fn script(&self) -> Option<&str> {
+        match self {
+            Self::Script(script) => Some(script),
+            Self::Python(_) => None,
+        }
+    }
+
+    /// The Python module to install, for [`Build::Python`].
+    pub fn python(&self) -> Option<&str> {
+        match self {
+            Self::Python(module) => Some(module),
+            Self::Script(_) => None,
+        }
+    }
 }

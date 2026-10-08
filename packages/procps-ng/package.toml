@@ -1,0 +1,26 @@
+name = "procps-ng"
+version = "4.0.7"
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "gcc",
+    "make",
+    "ncurses",
+    "pkgconf",
+    "systemd",
+]
+
+[[sources]]
+type = "http"
+url = "https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-4.0.7.tar.xz"
+sha256 = "9d2021f47a4501c667862c9942a92d1953694b21d11bcd1702e83eb594e3d67d"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

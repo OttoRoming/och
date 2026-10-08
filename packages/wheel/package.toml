@@ -1,0 +1,9 @@
+name = "wheel"
+version = "0.48.0"
+
+dependencies = ["python"]
+make_dependencies = ["flit-core", "packaging"]
+
+[build]
+type = "python"
+module = "wheel"

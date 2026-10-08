@@ -1,0 +1,28 @@
+name = "sqlite"
+version = "3530400"
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "gcc",
+    "gzip",
+    "make",
+    "ncurses",
+    "readline",
+    "zlib",
+]
+
+[[sources]]
+type = "http"
+url = "https://sqlite.org/2026/sqlite-autoconf-3530400.tar.gz"
+sha256 = "0e9483900e92cd5de8fd48d16bf9200145a61f7fd5be542a5ac81d8a9516eb9c"
+
+[[sources]]
+type = "http"
+url = "https://sqlite.org/2026/sqlite-doc-3530400.zip"
+sha256 = "a1d0f5de57485d062796ed7e67daff0758b50d00001a0f233a2c15aaf40bbdc8"
+
+[build]
+type = "script"
+script = "build.sh"

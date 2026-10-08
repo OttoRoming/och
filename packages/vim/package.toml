@@ -1,0 +1,26 @@
+name = "vim"
+version = "9.2.1025"
+
+dependencies = ["acl", "attr", "glibc", "ncurses", "python", "tcl"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gcc",
+    "grep",
+    "make",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://github.com/vim/vim/archive/v9.2.1025/vim-9.2.1025.tar.gz"
+sha256 = "cb0dbf701f8550bb54940304fa4d8b875e078db84967e5b36a0eb7ebe8a6d0cc"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

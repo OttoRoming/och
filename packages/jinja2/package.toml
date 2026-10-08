@@ -1,0 +1,9 @@
+name = "jinja2"
+version = "3.1.6"
+
+dependencies = ["markupsafe", "python"]
+make_dependencies = ["setuptools", "wheel"]
+
+[build]
+type = "python"
+module = "Jinja2"

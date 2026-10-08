@@ -1,0 +1,25 @@
+name = "gdbm"
+version = "1.26"
+
+dependencies = ["bash", "glibc", "readline"]
+make_dependencies = [
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gcc",
+    "grep",
+    "make",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/gdbm/gdbm-1.26.tar.gz"
+sha256 = "6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

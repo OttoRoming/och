@@ -1,0 +1,28 @@
+name = "texinfo"
+version = "7.3"
+bootstrap = true
+
+dependencies = ["glibc", "ncurses"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "gcc",
+    "gettext",
+    "grep",
+    "make",
+    "patch",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/texinfo/texinfo-7.3.tar.xz"
+sha256 = "51f74eb0f51cfa9873b85264dfdd5d46e8957ec95b88f0fb762f63d9e164c72e"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

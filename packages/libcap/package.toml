@@ -1,0 +1,26 @@
+name = "libcap"
+version = "2.78"
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "attr",
+    "bash",
+    "binutils",
+    "coreutils",
+    "gcc",
+    "make",
+    "perl",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.78.tar.xz"
+sha256 = "0d621e562fd932ccf67b9660fb018e468a683d7b827541df27813228c996bb11"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

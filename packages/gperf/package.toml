@@ -1,0 +1,17 @@
+name = "gperf"
+version = "3.3"
+
+dependencies = ["gcc", "glibc"]
+make_dependencies = ["bash", "binutils", "coreutils", "make"]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/gperf/gperf-3.3.tar.gz"
+sha256 = "fd87e0aba7e43ae054837afd6cd4db03a3f2693deb3619085e6ed9d8d9604ad8"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

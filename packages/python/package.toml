@@ -1,0 +1,35 @@
+name = "python"
+version = "3.14.7"
+bootstrap = true
+
+dependencies = [
+    "bzip2",
+    "expat",
+    "gdbm",
+    "glibc",
+    "libffi",
+    "libxcrypt",
+    "mpdecimal",
+    "ncurses",
+    "openssl",
+    "zlib",
+]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "gcc",
+    "gettext",
+    "grep",
+    "make",
+    "pkgconf",
+    "sed",
+    "util-linux",
+]
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

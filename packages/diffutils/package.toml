@@ -1,0 +1,29 @@
+name = "diffutils"
+version = "3.12"
+bootstrap = true
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "gawk",
+    "gcc",
+    "gettext",
+    "grep",
+    "make",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/diffutils/diffutils-3.12.tar.xz"
+sha256 = "7c8b7f9fc8609141fdea9cece85249d308624391ff61dedaf528fcb337727dfd"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

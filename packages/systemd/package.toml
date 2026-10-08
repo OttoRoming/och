@@ -1,0 +1,46 @@
+name = "systemd"
+version = "261.2"
+
+dependencies = [
+    "acl",
+    "glibc",
+    "libxcrypt",
+    "openssl",
+    "util-linux",
+    "xz",
+    "zlib",
+    "zstd",
+]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gawk",
+    "gcc",
+    "gperf",
+    "grep",
+    "jinja2",
+    "lz4",
+    "meson",
+    "pcre2",
+    "pkgconf",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://github.com/systemd/systemd/archive/v261.2/systemd-261.2.tar.gz"
+sha256 = "ed1059ff964f5df35b6056434cc17cc83f86dc913f10489948a0b19b6081c5ec"
+
+[[sources]]
+type = "http"
+url = "https://anduin.linuxfromscratch.org/LFS/systemd-man-pages-261.2.tar.xz"
+sha256 = "9be13865c9c7f9fecba7b86fc5185aecef00164c87ed68b4f6884283aefebe50"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

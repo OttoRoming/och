@@ -1,0 +1,9 @@
+name = "setuptools"
+version = "84.0.0"
+
+dependencies = ["python"]
+make_dependencies = ["wheel"]
+
+[build]
+type = "python"
+module = "setuptools"

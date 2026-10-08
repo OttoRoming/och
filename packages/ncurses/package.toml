@@ -1,0 +1,26 @@
+name = "ncurses"
+version = "6.6"
+bootstrap = true
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gawk",
+    "gcc",
+    "grep",
+    "make",
+    "patch",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://invisible-mirror.net/archives/ncurses/ncurses-6.6.tar.gz"
+sha256 = "355b4cbbed880b0381a04c46617b7656e362585d52e9cf84a67e2009b749ff11"
+
+[build]
+type = "script"
+script = "build.sh"

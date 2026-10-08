@@ -1,0 +1,22 @@
+name = "pkgconf"
+version = "3.0.5"
+
+dependencies = ["glibc"]
+make_dependencies = ["binutils", "gcc", "meson", "ninja", "python"]
+
+[[sources]]
+type = "http"
+url = "https://github.com/mesonbuild/meson/releases/download/1.12.0/meson-1.12.0.tar.gz"
+sha256 = "88afe0c20e52030218924ac37d0c81c59b4b5f3ae3752c8c6d7470c7d365886c"
+
+[[sources]]
+type = "http"
+url = "https://distfiles.ariadne.space/pkgconf/pkgconf-3.0.5.tar.xz"
+sha256 = "3acd3a8a3cce65a8d620321855d92fb602e026cbe8e13ee36bdec58483b59ace"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

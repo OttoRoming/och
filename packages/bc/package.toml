@@ -1,0 +1,17 @@
+name = "bc"
+version = "7.0.3"
+
+dependencies = ["glibc", "ncurses", "readline"]
+make_dependencies = ["bash", "binutils", "coreutils", "gcc", "grep", "make"]
+
+[[sources]]
+type = "http"
+url = "https://github.com/gavinhoward/bc/releases/download/7.0.3/bc-7.0.3.tar.xz"
+sha256 = "91eb74caed0ee6655b669711a4f350c25579778694df248e28363318e03c7fc4"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

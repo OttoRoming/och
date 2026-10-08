@@ -1,0 +1,23 @@
+name = "grub"
+version = "2.14"
+
+dependencies = ["bash", "gcc", "gettext", "glibc", "sed", "xz"]
+make_dependencies = [
+    "binutils",
+    "bison",
+    "coreutils",
+    "diffutils",
+    "grep",
+    "make",
+    "ncurses",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/grub/grub-2.14.tar.xz"
+sha256 = "bc8d3c73535b8838d8c8e2654d73edc4e6ae8c8acdb45d5df5dc9a1547446d43"
+
+[build]
+type = "script"
+script = "build.sh"

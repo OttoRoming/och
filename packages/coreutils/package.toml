@@ -1,0 +1,40 @@
+name = "coreutils"
+version = "9.11"
+bootstrap = true
+
+dependencies = ["glibc"]
+make_dependencies = [
+    "autoconf",
+    "automake",
+    "bash",
+    "binutils",
+    "coreutils",
+    "gcc",
+    "gettext",
+    "gmp",
+    "grep",
+    "libcap",
+    "make",
+    "openssl",
+    "patch",
+    "perl",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/coreutils/coreutils-9.11.tar.xz"
+sha256 = "394024eda0a5955217ceda9cd1201e65dc8fa3aa29c2951135a49521d57c3cc3"
+
+[[sources]]
+type = "http"
+url = "https://www.linuxfromscratch.org/patches/lfs/13.1/coreutils-9.11-i18n-1.patch"
+sha256 = "7c2aecf9ae24b87b019595e382b9f41d2c96de7f95abe95ad8cacc7e2ce1bbcc"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

@@ -1,0 +1,12 @@
+name = "iana-etc"
+version = "20260805"
+make_dependencies = ["coreutils"]
+
+[[sources]]
+type = "http"
+url = "https://github.com/Mic92/iana-etc/releases/download/20260805/iana-etc-20260805.tar.gz"
+sha256 = "29270860664e324107537f32ea476a333ca52d71b59c74bc06ecc3b0fa9cf490"
+
+[build]
+type = "script"
+script = "build.sh"

@@ -1,0 +1,27 @@
+name = "mpdecimal"
+version = "4.0.1"
+bootstrap = true
+
+dependencies = ["gcc", "glibc"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gawk",
+    "grep",
+    "make",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://www.bytereef.org/software/mpdecimal/releases/mpdecimal-4.0.1.tar.gz"
+sha256 = "96d33abb4bb0070c7be0fed4246cd38416188325f820468214471938545b1ac8"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

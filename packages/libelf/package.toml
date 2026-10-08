@@ -1,0 +1,17 @@
+name = "libelf"
+version = "0.195"
+
+dependencies = ["bzip2", "glibc", "xz", "zlib", "zstd"]
+make_dependencies = ["bash", "binutils", "coreutils", "gcc", "make"]
+
+[[sources]]
+type = "http"
+url = "https://sourceware.org/ftp/elfutils/0.195/elfutils-0.195.tar.bz2"
+sha256 = "37629fdf7f1f3dc2818e138fca2b8094177d6c2d0f701d3bb650a561218dc026"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

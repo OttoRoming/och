@@ -1,0 +1,28 @@
+name = "mpc"
+version = "1.4.1"
+
+dependencies = ["glibc", "gmp", "mpfr"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gawk",
+    "gcc",
+    "grep",
+    "make",
+    "sed",
+    "texinfo",
+]
+
+[[sources]]
+type = "http"
+url = "https://ftpmirror.gnu.org/mpc/mpc-1.4.1.tar.xz"
+sha256 = "91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

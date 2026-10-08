@@ -1,0 +1,9 @@
+name = "markupsafe"
+version = "3.0.3"
+
+dependencies = ["python"]
+make_dependencies = ["setuptools", "wheel"]
+
+[build]
+type = "python"
+module = "Markupsafe"

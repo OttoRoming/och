@@ -1,0 +1,8 @@
+name = "flit-core"
+version = "4.0.2"
+
+dependencies = ["python"]
+
+[build]
+type = "python"
+module = "flit_core"

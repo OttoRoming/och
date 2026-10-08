@@ -1,0 +1,9 @@
+name = "packaging"
+version = "26.3"
+
+dependencies = ["python"]
+make_dependencies = ["flit-core"]
+
+[build]
+type = "python"
+module = "packaging"

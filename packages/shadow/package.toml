@@ -1,0 +1,29 @@
+name = "shadow"
+version = "4.20.2"
+
+dependencies = ["glibc", "libxcrypt"]
+make_dependencies = [
+    "acl",
+    "attr",
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "findutils",
+    "gawk",
+    "gcc",
+    "gettext",
+    "grep",
+    "libcap",
+    "make",
+    "sed",
+]
+
+[[sources]]
+type = "http"
+url = "https://github.com/shadow-maint/shadow/releases/download/4.20.2/shadow-4.20.2.tar.xz"
+sha256 = "b89f432b75ae55a2d852b446d0365484795fdf533ab97d550e325fa15594a224"
+
+[build]
+type = "script"
+script = "build.sh"

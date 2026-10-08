@@ -1,0 +1,9 @@
+name = "meson"
+version = "1.12.0"
+
+dependencies = ["python"]
+make_dependencies = ["ninja", "setuptools", "wheel"]
+
+[build]
+type = "python"
+module = "meson"

@@ -1,0 +1,29 @@
+name = "file"
+version = "5.48"
+bootstrap = true
+
+dependencies = ["glibc", "bzip2", "xz", "zlib"]
+make_dependencies = [
+    "bash",
+    "binutils",
+    "coreutils",
+    "diffutils",
+    "gawk",
+    "gcc",
+    "grep",
+    "make",
+    "sed",
+    "zstd",
+]
+
+[[sources]]
+type = "http"
+url = "https://astron.com/pub/file/file-5.48.tar.gz"
+sha256 = "ed14656883b23a364b4057c05595d93252da9bc473d30106519519d0da141283"
+
+[build]
+type = "script"
+script = "build.sh"
+
+[check]
+script = "check.sh"

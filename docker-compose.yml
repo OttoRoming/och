@@ -1,0 +1,9 @@
+services:
+  oxish:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oxish
+    restart: unless-stopped
+    ports:
+      - "2222:22"

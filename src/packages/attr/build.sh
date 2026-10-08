@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env brush
 
 ./configure --prefix=/usr     \
             --disable-static  \

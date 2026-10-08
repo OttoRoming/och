@@ -1,5 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env brush
 
 touch /etc/fstab
-chown -R tester .
-su tester -c "make -k check"
+make -k check

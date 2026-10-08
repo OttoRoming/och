@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env brush
 
 ./configure --bindir=/usr/bin     \
             --libdir=/usr/lib     \

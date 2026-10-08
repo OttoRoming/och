@@ -1,4 +1,3 @@
-#!/bin/bash
+#!/usr/bin/env brush
 
-chown -R tester .
-su tester -c "PATH=$PATH make check -k"
+make check -k

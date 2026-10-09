@@ -7,3 +7,5 @@ services:
     restart: unless-stopped
     ports:
       - "2222:22"
+    volumes:
+      ./work:/home/builder/work

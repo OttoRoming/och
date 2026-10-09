@@ -31,4 +31,6 @@ RUN printf '%s\n' 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDV2Q4h6zhEwosGAYCDoFfFPT
 RUN chown builder:builder /home/builder/.ssh/authorized_keys
 RUN chmod 600 /home/builder/.ssh/authorized_keys
 
+RUN mkdir -pv /home/builder/work
+
 ENTRYPOINT ["/usr/local/bin/oxish-server", "--port", "22"]

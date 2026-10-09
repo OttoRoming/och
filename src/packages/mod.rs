@@ -2,11 +2,12 @@ use std::collections::HashMap;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use url::Url;
 
-use http::Uri;
 use serde::{Deserialize, Deserializer};
 
 mod build;
+pub mod builder;
 mod check;
 
 pub use build::Build;
@@ -50,8 +51,8 @@ pub enum Error {
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum Source {
     Http {
-        #[serde(deserialize_with = "deserialize_uri")]
-        url: Uri,
+        #[serde(deserialize_with = "deserialize_url")]
+        url: Url,
         /// Hex-encoded SHA256 of the downloaded file.
         #[serde(rename = "sha256", deserialize_with = "deserialize_sha256")]
         hash_sha256: [u8; 32],
@@ -211,7 +212,11 @@ impl Packages {
     /// Fails if a dependency list names a package that does not exist.
     fn check_dependencies(&self) -> Result<(), Error> {
         for package in self.packages.values() {
-            for dependency in package.dependencies.iter().chain(&package.make_dependencies) {
+            for dependency in package
+                .dependencies
+                .iter()
+                .chain(&package.make_dependencies)
+            {
                 if !self.packages.contains_key(dependency) {
                     return Err(Error::UnknownDependency {
                         package: package.name.clone(),
@@ -238,7 +243,10 @@ impl Packages {
     }
 
     /// The packages `package` needs to build.
-    pub fn make_dependencies<'a>(&'a self, package: &'a Package) -> impl Iterator<Item = &'a Package> {
+    pub fn make_dependencies<'a>(
+        &'a self,
+        package: &'a Package,
+    ) -> impl Iterator<Item = &'a Package> {
         resolve(&self.packages, &package.make_dependencies)
     }
 }
@@ -290,7 +298,7 @@ struct RawCheck {
     script: PathBuf,
 }
 
-fn deserialize_uri<'de, D>(deserializer: D) -> Result<Uri, D::Error>
+fn deserialize_url<'de, D>(deserializer: D) -> Result<Url, D::Error>
 where
     D: Deserializer<'de>,
 {

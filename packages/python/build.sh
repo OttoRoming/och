@@ -7,8 +7,8 @@ patch -Np1 -i ../Python-3.14.7-openssl_4-1.patch
             --enable-optimizations \
             --without-static-libpython
 make
-make install
-install -v -dm755 /usr/share/doc/python-3.14.7/html
+make DESTDIR="$DESTDIR" install
+install -v -dm755 "$DESTDIR"/usr/share/doc/python-3.14.7/html
 
 tar --strip-components=1  \
     --no-same-owner       \

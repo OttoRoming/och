@@ -23,10 +23,10 @@ sed -e "s|$SRCDIR/unix/pkgs/itcl4.3.7|/usr/lib/itcl4.3.7|" \
     -i pkgs/itcl4.3.7/itclConfig.sh
 
 unset SRCDIR
-make install
+make DESTDIR="$DESTDIR" install
 chmod 644 /usr/lib/libtclstub8.6.a
 chmod -v u+w /usr/lib/libtcl8.6.so
-make install-private-headers
+make DESTDIR="$DESTDIR" install-private-headers
 ln -sfv tclsh8.6 /usr/bin/tclsh
 mv -v /usr/share/man/man3/{Thread,Tcl_Thread}.3
 cd ..

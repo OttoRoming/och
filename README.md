@@ -142,14 +142,3 @@ separate configuration step:
   not assume a root install.
 - GCC's toolchain sanity greps and Glibc's `systemctl disable --now nscd` are
   transcribed as-is and may return non-zero in a minimal environment.
-
-### Private key for Docker
-```
------BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACA1dkOIes4RMKLBgGAg6BXxT09snX4rMCLUIyyGOV55/QAAAJAIy/JMCMvy
-TAAAAAtzc2gtZWQyNTUxOQAAACA1dkOIes4RMKLBgGAg6BXxT09snX4rMCLUIyyGOV55/Q
-AAAEA4dC7IKouxedP9GtQAy0a1loI11DIAN/nWl/d5aHoMWDV2Q4h6zhEwosGAYCDoFfFP
-T2ydfiswItQjLIY5Xnn9AAAADG90dG9AYXJvdHRvaAE=
------END OPENSSH PRIVATE KEY-----
-```

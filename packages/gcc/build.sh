@@ -20,7 +20,7 @@ cd       build
              --disable-fixincludes    \
              --with-system-zlib
 make
-make install
+make DESTDIR="$DESTDIR" install
 chown -v -R root:root $(gcc -print-file-name=include){,-fixed}
 ln -svr /usr/bin/cpp /usr/lib
 ln -sv gcc.1 /usr/share/man/man1/cc.1

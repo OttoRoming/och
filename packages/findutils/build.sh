@@ -3,4 +3,4 @@
 ./configure --prefix=/usr --localstatedir=/var/lib/locate
 
 make
-make install
+make DESTDIR="$DESTDIR" install

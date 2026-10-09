@@ -1,5 +1,5 @@
 #!/usr/bin/env brush
 
 make prefix=/usr
-make prefix=/usr install
+make DESTDIR="$DESTDIR" prefix=/usr install
 rm -v /usr/lib/libzstd.a

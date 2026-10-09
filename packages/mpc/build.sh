@@ -5,5 +5,5 @@
             --docdir=/usr/share/doc/mpc-1.4.1
 make
 make html
-make install
-make install-html
+make DESTDIR="$DESTDIR" install
+make DESTDIR="$DESTDIR" install-html

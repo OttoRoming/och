@@ -6,4 +6,4 @@
             --docdir=/usr/share/doc/attr-2.6.0
 
 make
-make install
+make DESTDIR="$DESTDIR" install

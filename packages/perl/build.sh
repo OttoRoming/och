@@ -17,5 +17,5 @@ sh Configure -des                                          \
              -D useshrplib                                 \
              -D usethreads
 make
-make install
+make DESTDIR="$DESTDIR" install
 unset BUILD_ZLIB BUILD_BZIP2

@@ -9,5 +9,5 @@ python3 -m zipfile -e ../sqlite-doc-3530400.zip .
                       -D SQLITE_ENABLE_DBSTAT_VTAB=1     \
                       -D SQLITE_SECURE_DELETE=1"
 make LDFLAGS.rpath=""
-make install
+make DESTDIR="$DESTDIR" install
 cp -v -R sqlite-doc-3530400 -T /usr/share/doc/sqlite-3.53.4

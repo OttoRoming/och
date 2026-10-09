@@ -5,4 +5,4 @@
             --docdir=/usr/share/doc/mpdecimal-4.0.1
 
 make
-make install
+make DESTDIR="$DESTDIR" install

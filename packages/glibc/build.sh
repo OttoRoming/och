@@ -15,14 +15,14 @@ touch /etc/ld.so.conf
 sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 rm -f /usr/sbin/nscd
 systemctl disable --now nscd
-make DESTDIR=$PWD/dest install
-install -vm755 dest/usr/lib/*.so.* /usr/lib
+make DESTDIR="$DESTDIR" install
+install -vm755 dest/usr/lib/*.so.* "$DESTDIR"/usr/lib
 DIR=$(dirname $(gcc -print-libgcc-file-name))
 [ -e $DIR/include/limits.h ]    || mv $DIR/include{-fixed,}/limits.h
 [ -e $DIR/include/syslimits.h ] || mv $DIR/include{-fixed,}/syslimits.h
 rm -rfv $DIR/include-fixed/*
 unset DIR
-make install
+make DESTDIR="$DESTDIR" install
 sed '/RTLDLIST=/s@/usr@@g' -i /usr/bin/ldd
 localedef -i C -f UTF-8 C.UTF-8
 localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8
@@ -58,4 +58,4 @@ localedef -i tr_TR -f UTF-8 tr_TR.UTF-8
 localedef -i zh_CN -f GB18030 zh_CN.GB18030
 localedef -i zh_HK -f BIG5-HKSCS zh_HK.BIG5-HKSCS
 localedef -i zh_TW -f UTF-8 zh_TW.UTF-8
-make localedata/install-locales
+make DESTDIR="$DESTDIR" localedata/install-locales

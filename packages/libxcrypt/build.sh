@@ -7,7 +7,7 @@ sed -i '/strchr/s/const//' lib/crypt-{sm3,gost}-yescrypt.c
             --disable-static             \
             --disable-failure-tokens
 make
-make install
+make DESTDIR="$DESTDIR" install
 make distclean
 ./configure --prefix=/usr                \
             --enable-hashes=strong,glibc \

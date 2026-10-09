@@ -4,5 +4,5 @@
             --disable-static \
             --docdir=/usr/share/doc/gettext-1.0
 make
-make install
+make DESTDIR="$DESTDIR" install
 chmod -v 0755 /usr/lib/preloadable_libintl.so

@@ -10,4 +10,4 @@
             --with-grap=/usr/bin/grap
 
 make
-make install
+make DESTDIR="$DESTDIR" install

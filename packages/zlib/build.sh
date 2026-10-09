@@ -2,5 +2,5 @@
 
 ./configure --prefix=/usr
 make
-make install
+make DESTDIR="$DESTDIR" install
 rm -fv /usr/lib/libz.a

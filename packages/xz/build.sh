@@ -5,4 +5,4 @@
             --docdir=/usr/share/doc/xz-5.8.3
 
 make
-make install
+make DESTDIR="$DESTDIR" install

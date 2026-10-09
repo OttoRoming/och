@@ -7,5 +7,5 @@ sed -i '/long long t1;/,+1s/()/(...)/' configure
             --docdir=/usr/share/doc/gmp-6.3.0
 make
 make html
-make install
-make install-html
+make DESTDIR="$DESTDIR" install
+make DESTDIR="$DESTDIR" install-html

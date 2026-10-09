@@ -12,5 +12,5 @@ sed -i 's/def HAVE_TERMCAP_TGETENT/ 1/' telnet/telnet.c
             --disable-rsh        \
             --disable-servers
 make
-make install
+make DESTDIR="$DESTDIR" install
 mv -v /usr/{,s}bin/ifconfig

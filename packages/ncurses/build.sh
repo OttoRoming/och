@@ -9,7 +9,7 @@
             --enable-pc-files       \
             --with-pkg-config-libdir=/usr/lib/pkgconfig
 make
-make DESTDIR=$PWD/dest install
+make DESTDIR="$DESTDIR" install
 sed -e 's/^#if.*XOPEN.*$/#if 1/' \
     -i dest/usr/include/curses.h
 cp --remove-destination -av dest/* /

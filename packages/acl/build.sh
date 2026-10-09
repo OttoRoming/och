@@ -5,4 +5,4 @@
             --docdir=/usr/share/doc/acl-2.4.0
 
 make
-make install
+make DESTDIR="$DESTDIR" install

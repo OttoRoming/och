@@ -3,7 +3,7 @@
 ./configure --prefix=/usr
 
 make
-make install
+make DESTDIR="$DESTDIR" install
 
 # Optionally install the components belonging in a TeX installation
-make TEXMF=/usr/share/texmf install-tex
+make DESTDIR="$DESTDIR" TEXMF=/usr/share/texmf install-tex

@@ -5,4 +5,4 @@
             --enable-libgdbm-compat
 
 make
-make install
+make DESTDIR="$DESTDIR" install

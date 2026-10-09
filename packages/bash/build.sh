@@ -6,4 +6,4 @@
             --docdir=/usr/share/doc/bash-5.3
 
 make
-make install
+make DESTDIR="$DESTDIR" install

@@ -8,4 +8,4 @@
             --with-systemd
 
 make
-make install
+make DESTDIR="$DESTDIR" install

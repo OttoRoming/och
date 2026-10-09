@@ -6,7 +6,7 @@ sed 's/--image-base/--nonexist-linker-option/' -i configure
             --disable-efiemu  \
             --disable-werror
 make
-make install
+make DESTDIR="$DESTDIR" install
 make clean
 ./configure --prefix=/usr       \
             --sysconfdir=/etc   \
@@ -15,7 +15,7 @@ make clean
             --disable-efiemu    \
             --disable-werror
 make
-make install
+make DESTDIR="$DESTDIR" install
 make clean
 ./configure --prefix=/usr       \
             --sysconfdir=/etc   \
@@ -24,4 +24,4 @@ make clean
             --disable-efiemu    \
             --disable-werror
 make
-make install
+make DESTDIR="$DESTDIR" install

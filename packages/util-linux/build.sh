@@ -18,4 +18,4 @@
             --docdir=/usr/share/doc/util-linux-2.42.2
 
 make
-make install
+make DESTDIR="$DESTDIR" install

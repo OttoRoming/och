@@ -13,5 +13,5 @@ sed -e '270a\
             --with-curses    \
             --docdir=/usr/share/doc/readline-8.3
 make SHLIB_LIBS="-lncursesw"
-make install
-install -v -m644 doc/*.{ps,pdf,html,dvi} /usr/share/doc/readline-8.3
+make DESTDIR="$DESTDIR" install
+install -v -m644 doc/*.{ps,pdf,html,dvi} "$DESTDIR"/usr/share/doc/readline-8.3

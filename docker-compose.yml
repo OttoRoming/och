@@ -3,9 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: oxish
+    container_name: builder
     restart: unless-stopped
     ports:
       - "2222:22"
     volumes:
-      ./work:/home/builder/work
+      - ./work:/home/builder/work
+      - ./destdir:/home/builder/destdir

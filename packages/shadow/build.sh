@@ -14,5 +14,5 @@ touch /usr/bin/passwd
             --disable-logind    \
             --with-group-name-max-length=32
 make
-make exec_prefix=/usr install
-make -C man install-man
+make DESTDIR="$DESTDIR" exec_prefix=/usr install
+make -C man DESTDIR="$DESTDIR" install-man

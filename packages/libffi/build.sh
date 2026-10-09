@@ -5,4 +5,4 @@
             --with-gcc-arch=native
 
 make
-make install
+make DESTDIR="$DESTDIR" install

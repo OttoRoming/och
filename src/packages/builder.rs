@@ -1,17 +1,19 @@
 //! Build packages
 
-use crate::paths;
 use crate::terminal::log;
+use crate::{config, paths};
 use deko::AnyDecoder;
+use lzma_rust2::{LzipOptions, LzipWriter};
 use podman_api::{
     Podman,
     conn::TtyChunk,
     opts::{ContainerListFilter, ContainerListOpts, ExecCreateOpts, ExecStartOpts, UserOpt},
 };
 use sha2::{Digest, Sha256};
-use std::collections::HashSet;
-use std::io::{self, BufRead, BufReader, Seek, SeekFrom, Write};
+use std::io::{self, BufRead, BufReader, Seek, SeekFrom, Write, WriterPanicked};
 use std::path::{Path, PathBuf};
+use std::{collections::HashSet, fs::File};
+use tar::Archive;
 
 use futures_util::StreamExt;
 use tempfile::tempfile;
@@ -272,7 +274,12 @@ impl<'a> Builder<'a> {
         let dir = self.fetch_sources().await;
 
         dbg!("Running recepie with", &dir);
-        self.run_recepie(dir).await
+        self.run_recepie(dir).await?;
+
+        dbg!("Bundling");
+        self.bundle();
+
+        Ok(())
     }
 
     /// Downloads every source and unpacks it into the shared work tree.
@@ -367,5 +374,16 @@ impl<'a> Builder<'a> {
         log::info(&format!("{} built", self.package.name()));
 
         Ok(())
+    }
+
+    /// Bundle the package into a .tar.lz
+    fn bundle(&self) {
+        let file = File::create("pkg.tar.lz").unwrap();
+        let lz_writer = LzipWriter::new(file, LzipOptions::with_preset(9));
+        let mut tar = tar::Builder::new(lz_writer);
+
+        tar.append_dir_all("", "destdir").unwrap();
+        tar.finish().unwrap();
+        tar.into_inner().unwrap().finish().unwrap();
     }
 }

@@ -134,8 +134,6 @@ separate configuration step:
   `/usr/share/zsh/site-functions/_meson`) are omitted.
 - `pkgconf` additionally pulls in the `meson-1.12.0.tar.gz` tarball it
   bootstraps from.
-- `groff`'s `build.sh` resolves chapter 8's `<paper_size>` placeholder as
-  `PAGE="${PAGE:-letter}"`.
 - `check.sh` starts with `cd build` (or `cd unix` for Tcl) where the tests must
   run in a subdirectory.
 - The `tester` user handling was removed from the check recipes, as och does

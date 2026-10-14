@@ -1,7 +1,7 @@
 //! Build packages
 
+use crate::paths;
 use crate::terminal::log;
-use crate::{config, paths};
 use deko::AnyDecoder;
 use lzma_rust2::{LzipOptions, LzipWriter};
 use podman_api::{
@@ -10,10 +10,9 @@ use podman_api::{
     opts::{ContainerListFilter, ContainerListOpts, ExecCreateOpts, ExecStartOpts, UserOpt},
 };
 use sha2::{Digest, Sha256};
-use std::io::{self, BufRead, BufReader, Seek, SeekFrom, Write, WriterPanicked};
+use std::io::{self, BufRead, BufReader, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::{collections::HashSet, fs::File};
-use tar::Archive;
 
 use futures_util::StreamExt;
 use tempfile::tempfile;
@@ -53,6 +52,8 @@ pub enum Error {
     NoExitStatus { command: String },
     #[error("failed to unpack a source archive: {0}")]
     Unpack(#[source] io::Error),
+    #[error("failed to write the package bundle: {0}")]
+    Bundle(#[source] io::Error),
     #[error("`{package}` exited with status {status} in `{name}`: {command}")]
     Command {
         name: String,
@@ -277,7 +278,7 @@ impl<'a> Builder<'a> {
         self.run_recepie(dir).await?;
 
         dbg!("Bundling");
-        self.bundle();
+        self.bundle()?;
 
         Ok(())
     }
@@ -377,13 +378,18 @@ impl<'a> Builder<'a> {
     }
 
     /// Bundle the package into a .tar.lz
-    fn bundle(&self) {
-        let file = File::create("pkg.tar.lz").unwrap();
+    fn bundle(&self) -> Result<(), Error> {
+        let file = File::create("pkg.tar.lz").map_err(Error::Bundle)?;
         let lz_writer = LzipWriter::new(file, LzipOptions::with_preset(9));
         let mut tar = tar::Builder::new(lz_writer);
 
-        tar.append_dir_all("", "destdir").unwrap();
-        tar.finish().unwrap();
-        tar.into_inner().unwrap().finish().unwrap();
+        tar.append_dir_all("", "destdir").map_err(Error::Bundle)?;
+        tar.finish().map_err(Error::Bundle)?;
+        tar.into_inner()
+            .map_err(Error::Bundle)?
+            .finish()
+            .map_err(Error::Bundle)?;
+
+        Ok(())
     }
 }

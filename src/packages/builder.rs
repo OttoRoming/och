@@ -379,7 +379,8 @@ impl<'a> Builder<'a> {
 
     /// Bundle the package into a .tar.lz
     fn bundle(&self) -> Result<(), Error> {
-        let file = File::create("pkg.tar.lz").map_err(Error::Bundle)?;
+        let file =
+            File::create(format!("{}.tar.lz", self.package.name())).map_err(Error::Bundle)?;
         let lz_writer = LzipWriter::new(file, LzipOptions::with_preset(9));
         let mut tar = tar::Builder::new(lz_writer);
 
